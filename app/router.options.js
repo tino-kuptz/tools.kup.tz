@@ -1,4 +1,5 @@
 export default {
+  strict: true,
   routes: scannedRoutes => [
     ...scannedRoutes,
     {

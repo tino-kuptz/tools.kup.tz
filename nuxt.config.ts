@@ -1,9 +1,11 @@
 import { fileURLToPath } from 'node:url';
+import { defineNuxtConfig } from 'nuxt/config';
 import vuetify from 'vite-plugin-vuetify';
 import svgLoader from 'vite-svg-loader';
 
 
 export default defineNuxtConfig({
+  ssr: true,
   app: {
     head: {
       titleTemplate: '%s - tools.kup.tz',
@@ -121,7 +123,6 @@ export default defineNuxtConfig({
 
   build: {
     transpile: ['vuetify'],
-    ssr: true,
   },
 
   features: {
@@ -134,8 +135,11 @@ export default defineNuxtConfig({
     output: {
       dir: 'dist',
     },
+    prerender: {
+      crawlLinks: true,
+      autoSubfolderIndex: false,
+    },
   },
-
 
   modules: [
     [
