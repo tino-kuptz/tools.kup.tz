@@ -119,6 +119,30 @@ const tools = [
         tags: ["Kennwort", "Sicherheit"],
         tokens: 0,
     },
+    {
+        name: "SPF Generator",
+        description: "Erstellt SPF-DNS-Einträge im Browser.",
+        link: "/security/spf",
+        category: ["Sicherheit", "DNS"],
+        tags: ["SPF", "DNS"],
+        tokens: 0,
+    },
+    {
+        name: "DKIM Generator",
+        description: "Erstellt DKIM-Schlüssel im Browser und generiert den DNS-Eintrag.",
+        link: "/security/dkim",
+        category: ["Sicherheit", "DNS"],
+        tags: ["DKIM", "DNS"],
+        tokens: 0,
+    },
+    {
+        name: "DMARC Generator",
+        description: "Erstellt DMARC-DNS-Einträge im Browser.",
+        link: "/security/dmarc",
+        category: ["Sicherheit", "DNS"],
+        tags: ["DMARC", "DNS"],
+        tokens: 0,
+    },
 ];
 
 export const get_tools_categories = () => {

@@ -211,8 +211,8 @@ const shuffleArray = (array) => {
     for (let i = shuffled.length - 1; i > 0; i--) {
         const array2 = new Uint8Array(1)
         crypto.getRandomValues(array2)
-        const j = array2[0] % (i + 1)
-            ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+        const j = array2[0] % (i + 1);
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
     return shuffled
 }
