@@ -1,6 +1,8 @@
 <script setup>
-useHead({
-    title: 'HTTP Request Tracker',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.track.http.title'),
 })
 
 const router = useRouter();
@@ -14,6 +16,6 @@ onMounted(() => {
 <template>
     <div>
         <VProgressCircular indeterminate color="primary" class="me-1" />
-        Weiterleitung…
+        {{ t('common.redirecting') }}
     </div>
 </template>

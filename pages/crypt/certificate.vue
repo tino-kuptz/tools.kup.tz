@@ -1,11 +1,13 @@
 <script setup>
 import { checkChainCompleteness, hashAlgorithmToName, parseCertificates as parseCertificatesUtil, resolveCTLogId, signatureAlgorithmToName } from '~/utils/certificateParser';
 
-useHead({
-    title: 'Zertifikat Parser',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.crypt.certificate.title'),
     meta: [
         {
-            description: 'Parst und analysiert X.509 Zertifikate im PEM-Format.',
+            description: t('pages.crypt.certificate.description'),
         },
     ],
 })
@@ -22,7 +24,7 @@ const ctLogInfo = ref({}); // Map of logId -> log info
 // Parse Certificates
 const parseCertificates = async () => {
     if (!certificateInput.value.trim()) {
-        $toast.error('Bitte gebe mindestens ein Zertifikat ein', {
+        $toast.error(t('common.errors.pleaseEnterCertificate'), {
             position: "bottom-center",
         });
         return;
@@ -51,12 +53,12 @@ const parseCertificates = async () => {
             }
         }
 
-        $toast.success(`${parsedCertificates.value.length} Zertifikat(e) erfolgreich geparst`, {
+        $toast.success(t('pages.crypt.certificate.parseSuccess', { count: parsedCertificates.value.length }), {
             position: "bottom-center",
         });
     } catch (error) {
         console.error(error);
-        $toast.error('Fehler beim Parsen der Zertifikate: ' + error.message, {
+        $toast.error(t('pages.crypt.certificate.parseError') + ': ' + error.message, {
             position: "bottom-center",
         });
     } finally {
@@ -74,11 +76,11 @@ const clearParsed = () => {
 const copyToClipboard = async (text) => {
     try {
         await navigator.clipboard.writeText(text);
-        $toast.success('In Zwischenablage kopiert', {
+        $toast.success(t('pages.crypt.certificate.copySuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
-        $toast.error('Fehler beim Kopieren', {
+        $toast.error(t('pages.crypt.certificate.copyError'), {
             position: "bottom-center",
         });
     }
@@ -118,25 +120,22 @@ const formatDate = (dateString) => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">Zertifikat Parser</h2>
+        <h2 class="mb-2">{{ t('pages.crypt.certificate.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kannst du X.509 Zertifikate im PEM-Format parsen und analysieren. Du kannst
-                        einzelne Zertifikate oder ganze Zertifikatsketten eingeben.
+                        {{ t('pages.crypt.certificate.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Das Tool zeigt dir alle wichtigen Informationen zu jedem Zertifikat, einschließlich Public Key
-                        Details, Gültigkeit, Verwendungszweck und Certificate Transparency Informationen.
+                        {{ t('pages.crypt.certificate.descriptionNote') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        <strong>Die Verarbeitung wird im Browser durchgeführt</strong>, es werden keine Daten an den
-                        Server übertragen.
+                        <strong>{{ t('pages.crypt.certificate.descriptionPrivacy') }}</strong>
                     </div>
                 </div>
             </VCardItem>
@@ -147,22 +146,21 @@ const formatDate = (dateString) => {
             <VCardText class="p-2">
                 <VRow>
                     <VCol cols="12">
-                        <h3 class="mb-3">Zertifikat(e) eingeben</h3>
+                        <h3 class="mb-3">{{ t('pages.crypt.certificate.enterCertificates') }}</h3>
                         <textarea v-model="certificateInput" class="w-100"
                             placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----&#10;-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
                             rows="12" :disabled="isParsing"></textarea>
-                        <small class="text-muted">Ein oder mehrere Zertifikate im PEM-Format (kann eine ganze Chain
-                            sein)</small>
+                        <small class="text-muted">{{ t('pages.crypt.certificate.certificatePlaceholder') }}</small>
                         <div class="mt-2">
                             <VBtn color="primary" @click="parseCertificates"
                                 :disabled="isParsing || !certificateInput.trim()" role="button">
                                 <i class='bx bx-search me-2'></i>
-                                Zertifikate parsen
+                                {{ t('pages.crypt.certificate.parseCertificates') }}
                             </VBtn>
                             <VBtn color="secondary" @click="clearParsed"
                                 :disabled="isParsing || parsedCertificates.length === 0" role="button" class="ms-2">
                                 <i class='bx bx-trash me-2'></i>
-                                Zurücksetzen
+                                {{ t('pages.crypt.certificate.reset') }}
                             </VBtn>
                         </div>
                     </VCol>
@@ -182,32 +180,34 @@ const formatDate = (dateString) => {
             <VCard>
                 <VCardTitle>
                     <div class="d-flex align-center justify-content-between mt-4">
-                        <h3 class="mb-0">Zertifikat #{{ cert.index }}</h3>
+                        <h3 class="mb-0">{{ t('pages.crypt.certificate.certificate') }} #{{ cert.index }}</h3>
                         <VChip v-if="cert.isSelfSigned" color="info" size="small" class="ms-4">
-                            Self-Signed
+                            {{ t('pages.crypt.certificate.selfSigned') }}
                         </VChip>
                         <VChip :color="cert.basicConstraints.isCA ? 'warning' : 'default'" size="small" class="ms-4">
-                            {{ cert.basicConstraints.isCA ? 'CA' : 'End-Entity-Zertifikat' }}
+                            {{ cert.basicConstraints.isCA ? t('pages.crypt.certificate.ca') :
+                                t('pages.crypt.certificate.endEntity') }}
                         </VChip>
                         <VChip :color="cert.validity.isValid ? 'success' : 'error'" size="small" class="ms-4">
-                            {{ cert.validity.isValid ? 'Gültig' : 'Abgelaufen' }}
+                            {{ cert.validity.isValid ? t('pages.crypt.certificate.valid') :
+                                t('pages.crypt.certificate.expired') }}
                         </VChip>
                         <VChip v-if="cert.certificateTransparency.present" color="success" size="small" class="ms-4">
-                            CT
+                            {{ t('pages.crypt.certificate.ct') }}
                         </VChip>
                     </div>
                     <small class="text-muted d-block mb-2">{{ cert.subject.fullDN }}</small>
                 </VCardTitle>
                 <VCardText v-if="cert.error">
                     <VAlert type="error" variant="tonal">
-                        <strong>Fehler:</strong> {{ cert.error }}
+                        <strong>{{ t('pages.crypt.certificate.error') }}:</strong> {{ cert.error }}
                     </VAlert>
                 </VCardText>
                 <VCardText v-else>
                     <VRow>
                         <!-- Subject (Für) -->
                         <VCol cols="12" md="6">
-                            <h4 class="mb-2">Für (Subject)</h4>
+                            <h4 class="mb-2">{{ t('pages.crypt.certificate.subject') }}</h4>
                             <VCard variant="outlined">
                                 <VCardText>
                                     <div v-if="cert.subject.CN"><strong>CN:</strong> {{ cert.subject.CN }}</div>
@@ -226,17 +226,18 @@ const formatDate = (dateString) => {
                         <!-- Issuer (Herausgeber) -->
                         <VCol cols="12" md="6">
                             <div class="d-flex justify-content-around align-center mb-2">
-                                <h4 class="me-auto">Herausgeber (Issuer)</h4>
+                                <h4 class="me-auto">{{ t('pages.crypt.certificate.issuer') }}</h4>
                                 <div v-if="cert.issuerCertificateIndex">
                                     <VChip color="info" size="small" class="cursor-pointer"
                                         @click="scrollToCertificate(cert.issuerCertificateIndex)"
                                         style="cursor: pointer;">
                                         <i class='bx bx-link-external me-1'></i>
-                                        Zertifikat #{{ cert.issuerCertificateIndex }}
+                                        {{ t('pages.crypt.certificate.certificateLink') }} #{{
+                                            cert.issuerCertificateIndex }}
                                     </VChip>
                                 </div>
                                 <div v-else-if="!cert.isSelfSigned">
-                                    <small class="text-muted">Issuer-Zertifikat nicht in der Chain gefunden</small>
+                                    <small class="text-muted">{{ t('pages.crypt.certificate.issuerNotFound') }}</small>
                                 </div>
                             </div>
                             <VCard variant="outlined">
@@ -255,11 +256,13 @@ const formatDate = (dateString) => {
 
                         <!-- Public Key -->
                         <VCol cols="12" md="6">
-                            <h4 class="mb-2">Public Key</h4>
+                            <h4 class="mb-2">{{ t('pages.crypt.certificate.publicKey') }}</h4>
                             <VCard variant="outlined">
                                 <VCardText>
-                                    <div><strong>Typ:</strong> {{ cert.publicKey.type }}</div>
-                                    <div class="mt-2"><strong>Key Size:</strong> {{ cert.publicKey.keySizeBits }} Bit
+                                    <div><strong>{{ t('pages.crypt.certificate.type') }}:</strong> {{
+                                        cert.publicKey.type }}</div>
+                                    <div class="mt-2"><strong>{{ t('pages.crypt.certificate.keySize') }}:</strong> {{
+                                        cert.publicKey.keySizeBits }} Bit
                                         ({{ cert.publicKey.keySizeBytes }} Bytes)</div>
                                     <div v-if="cert.publicKey.modulus">
                                         <strong class="d-block mt-2">Modulus (Hex):</strong>
@@ -268,13 +271,17 @@ const formatDate = (dateString) => {
                                             {{ cert.publicKey.modulus.hex }}
                                         </div>
                                         <small class="text-muted">
-                                            Länge: {{ cert.publicKey.modulus.length }} Zeichen
+                                            {{ t('pages.crypt.certificate.length') }}: {{ cert.publicKey.modulus.length
+                                            }} Zeichen
                                         </small>
                                     </div>
                                     <div v-if="cert.publicKey.exponent">
-                                        <strong class="d-block mt-2">Exponent:</strong>
-                                        <div class="mt-1">Hex: {{ cert.publicKey.exponent.hex }}</div>
-                                        <div>Dezimal: {{ cert.publicKey.exponent.decimal }}</div>
+                                        <strong class="d-block mt-2">{{ t('pages.crypt.certificate.exponent')
+                                            }}:</strong>
+                                        <div class="mt-1">{{ t('pages.crypt.certificate.hex') }}: {{
+                                            cert.publicKey.exponent.hex }}</div>
+                                        <div>{{ t('pages.crypt.certificate.decimal') }}: {{
+                                            cert.publicKey.exponent.decimal }}</div>
                                     </div>
                                 </VCardText>
                             </VCard>
@@ -282,23 +289,29 @@ const formatDate = (dateString) => {
 
                         <!-- Validity, Subject Alternative Names, CA Informationen -->
                         <VCol cols="12" md="6">
-                            <h4 class="mb-2">Gültigkeit</h4>
+                            <h4 class="mb-2">{{ t('pages.crypt.certificate.validity') }}</h4>
                             <VCard variant="outlined">
                                 <VCardText>
-                                    <div><strong>Gültig ab:</strong> {{ formatDate(cert.validity.notBefore) }}</div>
-                                    <div><strong>Gültig bis:</strong> {{ formatDate(cert.validity.notAfter) }}</div>
+                                    <div><strong>{{ t('pages.crypt.certificate.validFrom') }}:</strong> {{
+                                        formatDate(cert.validity.notBefore) }}</div>
+                                    <div><strong>{{ t('pages.crypt.certificate.validUntil') }}:</strong> {{
+                                        formatDate(cert.validity.notAfter) }}</div>
                                     <div class="mt-2">
                                         <span v-if="cert.validity.daysRemaining >= 0" class="ms-2">
-                                            ({{ cert.validity.daysRemaining }} Tage verbleibend)
+                                            ({{ cert.validity.daysRemaining }} {{
+                                                t('pages.crypt.certificate.daysRemaining') }})
                                         </span>
                                         <span v-else class="ms-2 text-error">
-                                            (vor {{ Math.abs(cert.validity.daysRemaining) }} Tagen abgelaufen)
+                                            ({{ t('pages.crypt.certificate.expiredDaysAgo', {
+                                                days:
+                                                    Math.abs(cert.validity.daysRemaining)
+                                            }) }})
                                         </span>
                                     </div>
                                 </VCardText>
                             </VCard>
 
-                            <h4 class="mt-4 mb-2">Subject Alternative Names</h4>
+                            <h4 class="mt-4 mb-2">{{ t('pages.crypt.certificate.subjectAltNames') }}</h4>
                             <VCard variant="outlined">
                                 <VCardText v-if="cert.subjectAltNames && cert.subjectAltNames.length > 0">
                                     <div v-for="(altName, idx) in cert.subjectAltNames" :key="idx" class="mb-1">
@@ -306,19 +319,20 @@ const formatDate = (dateString) => {
                                     </div>
                                 </VCardText>
                                 <VCardText v-else class="text-muted">
-                                    Keine Subject Alternative Names vorhanden
+                                    {{ t('pages.crypt.certificate.noSubjectAltNames') }}
                                 </VCardText>
                             </VCard>
 
-                            <h4 class="mt-4 mb-2">CA Informationen</h4>
+                            <h4 class="mt-4 mb-2">{{ t('pages.crypt.certificate.caInfo') }}</h4>
                             <VCard variant="outlined" class="mt-2">
                                 <VCardText>
                                     <div v-if="cert.basicConstraints.pathLength !== null" class="mb-2">
-                                        <strong>Path Length Constraint:</strong> {{ cert.basicConstraints.pathLength }}
+                                        <strong>{{ t('pages.crypt.certificate.pathLengthConstraint') }}:</strong> {{
+                                            cert.basicConstraints.pathLength }}
                                     </div>
                                     <div v-if="cert.crlDistributionPoints && cert.crlDistributionPoints.length > 0"
                                         class="mt-2">
-                                        <strong>CRL Distribution Points:</strong>
+                                        <strong>{{ t('pages.crypt.certificate.crlDistributionPoints') }}:</strong>
                                         <div v-for="(url, idx) in cert.crlDistributionPoints" :key="idx" class="mt-1">
                                             <a :href="url" target="_blank" rel="noopener noreferrer"
                                                 class="text-break">{{ url }}</a>
@@ -326,7 +340,7 @@ const formatDate = (dateString) => {
                                     </div>
                                     <div v-if="cert.basicConstraints.pathLength === null && (!cert.crlDistributionPoints || cert.crlDistributionPoints.length === 0)"
                                         class="text-muted">
-                                        Keine zusätzlichen CA-Informationen vorhanden
+                                        {{ t('pages.crypt.certificate.noCaInfo') }}
                                     </div>
                                 </VCardText>
                             </VCard>
@@ -334,7 +348,7 @@ const formatDate = (dateString) => {
 
                         <!-- Key Usage -->
                         <VCol cols="12" md="6">
-                            <h4 class="mb-2">Verwendung (Key Usage)</h4>
+                            <h4 class="mb-2">{{ t('pages.crypt.certificate.keyUsage') }}</h4>
                             <VCard variant="outlined">
                                 <VCardText v-if="cert.keyUsage">
                                     <template v-for="(value, key) in cert.keyUsage" :key="key">
@@ -343,18 +357,18 @@ const formatDate = (dateString) => {
                                         </template>
                                     </template>
                                     <div v-if="!Object.values(cert.keyUsage).some(v => v)" class="text-muted">
-                                        Keine Key Usage Flags gesetzt
+                                        {{ t('pages.crypt.certificate.noKeyUsageFlags') }}
                                     </div>
                                 </VCardText>
                                 <VCardText v-else class="text-muted">
-                                    Keine Key Usage Extension vorhanden
+                                    {{ t('pages.crypt.certificate.noKeyUsageExtension') }}
                                 </VCardText>
                             </VCard>
                         </VCol>
 
                         <!-- Certificate Transparency + Extended Key Usage -->
                         <VCol cols="12" md="6">
-                            <h4 class="mb-2">Erweiterte Verwendung (Extended Key Usage)</h4>
+                            <h4 class="mb-2">{{ t('pages.crypt.certificate.extendedKeyUsage') }}</h4>
                             <VCard variant="outlined">
                                 <VCardText v-if="cert.extKeyUsage && cert.extKeyUsage.length > 0">
                                     <template v-for="usage in cert.extKeyUsage" :key="usage">
@@ -362,17 +376,17 @@ const formatDate = (dateString) => {
                                     </template>
                                 </VCardText>
                                 <VCardText v-else class="text-muted">
-                                    Keine Extended Key Usage Extension vorhanden
+                                    {{ t('pages.crypt.certificate.noExtendedKeyUsageExtension') }}
                                 </VCardText>
                             </VCard>
                         </VCol>
                         <VCol cols="12">
-                            <h4 class="mt-4 mb-2">Certificate Transparency</h4>
+                            <h4 class="mt-4 mb-2">{{ t('pages.crypt.certificate.certificateTransparency') }}</h4>
                             <VCard variant="outlined">
                                 <VCardText>
                                     <div
                                         v-if="cert.certificateTransparency.present && cert.certificateTransparency.scts && cert.certificateTransparency.scts.length > 0">
-                                        <strong class="d-block mb-2">CT Logs
+                                        <strong class="d-block mb-2">{{ t('pages.crypt.certificate.ctLogs') }}
                                             ({{ cert.certificateTransparency.scts.length }}):
                                         </strong>
                                         <div style="overflow-x: auto;">
@@ -382,23 +396,30 @@ const formatDate = (dateString) => {
                                                         <th class="text-start pa-2" style="min-width: 50px;">#</th>
                                                         <th class="text-start pa-2"
                                                             v-if="cert.certificateTransparency.scts.some(s => s.version !== null && s.version !== undefined)"
-                                                            style="min-width: 80px;">Version</th>
-                                                        <th class="text-start pa-2" style="min-width: 200px;">Log
+                                                            style="min-width: 80px;">{{
+                                                                t('pages.crypt.certificate.version') }}</th>
+                                                        <th class="text-start pa-2" style="min-width: 200px;">{{
+                                                            t('pages.crypt.certificate.log') }}
                                                         </th>
-                                                        <th class="text-start pa-2" style="min-width: 150px;">Timestamp
+                                                        <th class="text-start pa-2" style="min-width: 150px;">{{
+                                                            t('pages.crypt.certificate.timestamp') }}
                                                         </th>
                                                         <th class="text-start pa-2"
                                                             v-if="cert.certificateTransparency.scts.some(s => s.hashAlgorithm !== null && s.hashAlgorithm !== undefined)"
-                                                            style="min-width: 120px;">Hash Alg.</th>
+                                                            style="min-width: 120px;">{{
+                                                                t('pages.crypt.certificate.hashAlg') }}</th>
                                                         <th class="text-start pa-2"
                                                             v-if="cert.certificateTransparency.scts.some(s => s.signatureAlgorithm !== null && s.signatureAlgorithm !== undefined)"
-                                                            style="min-width: 120px;">Sig. Alg.</th>
+                                                            style="min-width: 120px;">{{
+                                                                t('pages.crypt.certificate.sigAlg') }}</th>
                                                         <th class="text-start pa-2"
                                                             v-if="cert.certificateTransparency.scts.some(s => s.extensions)"
-                                                            style="min-width: 150px;">Extensions</th>
+                                                            style="min-width: 150px;">{{
+                                                                t('pages.crypt.certificate.extensions') }}</th>
                                                         <th class="text-start pa-2"
                                                             v-if="cert.certificateTransparency.scts.some(s => s.signature)"
-                                                            style="min-width: 200px;">Signature</th>
+                                                            style="min-width: 200px;">{{
+                                                                t('pages.crypt.certificate.signature') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -437,7 +458,7 @@ const formatDate = (dateString) => {
                                                             </div>
                                                             <div v-else>
                                                                 <div class="text-caption text-muted">
-                                                                    Unbekannter Log
+                                                                    {{ t('pages.crypt.certificate.unknownLog') }}
                                                                 </div>
                                                                 <code class="small ps-0"
                                                                     style="word-break: break-all;">{{ sct.logId }}</code>
@@ -479,8 +500,9 @@ const formatDate = (dateString) => {
                                                                 <VBtn size="x-small" variant="text"
                                                                     @click="showFullSignature = showFullSignature === sct.index ? null : sct.index"
                                                                     class="ms-1">
-                                                                    {{ showFullSignature === sct.index ? 'Weniger' :
-                                                                        'Mehr' }}
+                                                                    {{ showFullSignature === sct.index ?
+                                                                        t('pages.crypt.certificate.less') :
+                                                                        t('pages.crypt.certificate.more') }}
                                                                 </VBtn>
                                                             </div>
                                                             <span v-else class="text-muted">-</span>
@@ -493,8 +515,8 @@ const formatDate = (dateString) => {
 
                                     <div v-if="cert.certificateTransparency.present && cert.certificateTransparency.raw && (!cert.certificateTransparency.scts || cert.certificateTransparency.scts.length === 0)"
                                         class="mt-2">
-                                        <small class="text-muted">SCT-Daten vorhanden, aber Struktur konnte nicht
-                                            geparst werden</small>
+                                        <small class="text-muted">{{ t('pages.crypt.certificate.sctDataPresent')
+                                        }}</small>
                                         <div class="mt-1 font-monospace small"
                                             style="word-break: break-all; max-height: 200px; overflow-y: auto; white-space: pre-wrap;">
                                             {{ typeof cert.certificateTransparency.raw === 'string' ?
@@ -505,7 +527,7 @@ const formatDate = (dateString) => {
 
                                     <div v-if="!cert.certificateTransparency.present || (!cert.certificateTransparency.scts && !cert.certificateTransparency.raw)"
                                         class="text-muted">
-                                        Keine Certificate Transparency Informationen vorhanden
+                                        {{ t('pages.crypt.certificate.noCtInfo') }}
                                     </div>
                                 </VCardText>
                             </VCard>
@@ -513,34 +535,39 @@ const formatDate = (dateString) => {
 
                         <!-- Additional Info -->
                         <VCol cols="12">
-                            <h4 class="mb-2">Weitere Informationen</h4>
+                            <h4 class="mb-2">{{ t('pages.crypt.certificate.additionalInfo') }}</h4>
                             <VCard variant="outlined">
                                 <VCardText>
                                     <VRow>
                                         <VCol cols="12" md="6">
 
-                                            <div><strong>Serial Number:</strong> {{ cert.serialNumber }}</div>
-                                            <div><strong>Signature Algorithm:</strong> {{ cert.signatureAlgorithm }}
+                                            <div><strong>{{ t('pages.crypt.certificate.serialNumber') }}:</strong> {{
+                                                cert.serialNumber }}</div>
+                                            <div><strong>{{ t('pages.crypt.certificate.signatureAlgorithm') }}:</strong>
+                                                {{
+                                                    cert.signatureAlgorithm }}
                                             </div>
-                                            <div><strong>Version:</strong> {{ cert.version }}</div>
+                                            <div><strong>{{ t('pages.crypt.certificate.version') }}:</strong> {{
+                                                cert.version }}</div>
 
-                                            <strong class="d-block mt-2">Zertifikat (PEM):</strong>
+                                            <strong class="d-block mt-2">{{ t('pages.crypt.certificate.certificatePem')
+                                            }}:</strong>
                                             <textarea v-model="cert.pem" class="w-100" rows="8" readonly></textarea>
                                             <VBtn color="primary" @click="copyToClipboard(cert.pem)" class="mt-2"
                                                 size="small">
                                                 <i class='bx bx-copy me-2'></i>
-                                                Zertifikat kopieren
+                                                {{ t('pages.crypt.certificate.copyCertificate') }}
                                             </VBtn>
                                         </VCol>
                                         <VCol cols="12" md="6">
                                             <div v-if="Object.keys(cert.extensions).length > 0">
-                                                <strong>Alle Extensions:</strong>
+                                                <strong>{{ t('pages.crypt.certificate.allExtensions') }}:</strong>
                                                 <div class="mt-2">
                                                     <div v-for="(ext, key) in cert.extensions" :key="key" class="mb-1">
                                                         <strong>{{ ext.name || key }}:</strong>
                                                         <VChip v-if="ext.critical" color="warning" size="x-small"
                                                             class="ms-1">
-                                                            Critical
+                                                            {{ t('pages.crypt.certificate.critical') }}
                                                         </VChip>
                                                         <div class="text-muted small">{{ ext.id }}</div>
                                                     </div>

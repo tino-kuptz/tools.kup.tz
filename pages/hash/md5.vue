@@ -2,11 +2,13 @@
 import CryptoJS from 'crypto-js';
 import md5 from 'md5';
 
-useHead({
-    title: 'MD5 Hash Generator',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.hash.md5.title'),
     meta: [
         {
-            description: 'Online mal schnell einen MD5 Hash von einem Text oder einer Datei generieren.',
+            description: t('pages.hash.md5.description'),
         },
     ],
 })
@@ -41,11 +43,11 @@ const onFileChange = (event) => {
 const { $toast } = useNuxtApp()
 const copyToClipboard = () => {
     navigator.clipboard.writeText(outputText.value).then(() => {
-        $toast.success('MD5-Hash wurde in die Zwischenablage kopiert', {
+        $toast.success(t('pages.hash.md5.copySuccess'), {
             position: "bottom-center",
         })
     }).catch(err => {
-        $toast.error('Fehler beim Kopieren:\n' + err.message, {
+        $toast.error(t('pages.hash.md5.copyError') + ':\n' + err.message, {
             position: "bottom-center",
         });
     });
@@ -64,20 +66,19 @@ watch(inputType, (newValue) => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">MD5 Hash Generator</h2>
+        <h2 class="mb-2">{{ t('pages.hash.md5.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kann ein MD5-Hash von einem Text oder einer Datei generiert werden.
+                        {{ t('pages.hash.md5.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Der Hash wird im Browser generiert, der eingegebene Text oder die ausgewählte Datei wird nicht
-                        via Netzwerk an andere Geräte übertragen.
+                        {{ t('pages.hash.md5.descriptionPrivacy') }}
                     </div>
                 </div>
             </VCardItem>
@@ -85,38 +86,41 @@ watch(inputType, (newValue) => {
 
         <VCard>
             <VCardText class="p-2" v-if="inputType === 'text'">
-                <h3 class="mb-3">Text</h3>
-                <textarea v-model="inputText" class="w-100" placeholder="Zu hashender Text" rows="5"></textarea>
+                <h3 class="mb-3">{{ t('pages.hash.md5.text') }}</h3>
+                <textarea v-model="inputText" class="w-100" :placeholder="t('pages.hash.md5.textPlaceholder')"
+                    rows="5"></textarea>
                 <div class="pt-3">
                     <v-btn color="primary" @click="inputType = 'file'" role="button">
-                        Stattdessen eine Datei hashen
+                        {{ t('pages.hash.md5.switchToFile') }}
                     </v-btn>
                 </div>
             </VCardText>
             <VCardText class="p-2" v-else>
-                <h3 class="mb-3">Datei</h3>
+                <h3 class="mb-3">{{ t('pages.hash.md5.file') }}</h3>
                 <input type="file" @change="onFileChange" class="w-100" />
                 <div class="pt-3">
                     <v-btn color="primary" @click="inputType = 'text'" role="button">
-                        Stattdessen einen Text hashen
+                        {{ t('pages.hash.md5.switchToText') }}
                     </v-btn>
                 </div>
             </VCardText>
 
             <VCardText>
-                <h3 class="mb-3">MD5 Hash</h3>
-                <input v-model="outputText" class="w-100" placeholder="MD5 Hash" rows="1" disabled />
+                <h3 class="mb-3">{{ t('pages.hash.md5.hashLabel') }}</h3>
+                <input v-model="outputText" class="w-100" :placeholder="t('pages.hash.md5.hashPlaceholder')" rows="1"
+                    disabled />
                 <div class="text-end">
                     <v-btn class="mt-2" color="primary" @click="copyToClipboard" :disabled="outputText === ''"
                         role="button">
                         <i class='bx bx-copy me-2'></i>
-                        Zwischenablage
+                        {{ t('pages.hash.md5.clipboard') }}
                     </v-btn>
                 </div>
             </VCardText>
         </VCard>
         <div class="text-secondary mt-2">
-            <small>Powered by npm package <a href="https://www.npmjs.com/package/md5" target="_blank">md5</a> and
+            <small>
+                Powered by npm package <a href="https://www.npmjs.com/package/md5" target="_blank">md5</a> and
                 <a href="https://www.npmjs.com/package/crypto-js" target="_blank">crypto-js</a></small>
         </div>
     </div>

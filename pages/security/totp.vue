@@ -1,12 +1,19 @@
 <script setup>
-useHead({
-    title: 'TOTP Generator',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.security.totp.title'),
+    meta: [
+        {
+            description: t('pages.security.totp.description'),
+        },
+    ],
 });
 
 import QRCode from 'qrcode';
 
 const secret = ref('');
-const label = ref('Meine App');
+const label = ref('');
 const digits = ref(6);
 const period = ref(30);
 const algorithm = ref('SHA-1'); // 'SHA-1' | 'SHA-256' | 'SHA-512'
@@ -53,9 +60,9 @@ const progress = computed(() => {
 const copyCode = async () => {
     try {
         await navigator.clipboard.writeText(code.value);
-        $toast && $toast.success('Code kopiert', { position: 'bottom-center' });
+        $toast && $toast.success(t('pages.security.totp.copySuccess'), { position: 'bottom-center' });
     } catch (e) {
-        $toast && $toast.error('Konnte Code nicht kopieren', { position: 'bottom-center' });
+        $toast && $toast.error(t('pages.security.totp.copyError'), { position: 'bottom-center' });
     }
 };
 
@@ -128,7 +135,7 @@ const updateCode = async () => {
         const mac = await getHmac(keyBytes, counter, algoMap[algorithm.value]);
         code.value = truncateToCode(mac, digits.value);
     } catch (e) {
-        code.value = 'Fehler';
+        code.value = t('pages.security.totp.error');
     }
 };
 
@@ -169,15 +176,13 @@ watch([secret, digits, period, algorithm, label], () => {
 
 <template>
     <div>
-        <h2 class="mb-2">TOTP Generator</h2>
+        <h2 class="mb-2">{{ t('pages.security.totp.heading') }}</h2>
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
-                    <div class="text-overline mb-2">Über dieses Tool</div>
+                    <div class="text-overline mb-2">{{ t('common.about') }}</div>
                     <div class="text-h6 mb-1">
-                        TOTPs (Time-based One-Time Passwords) werden <strong>ausschließlich im Browser</strong>
-                        erzeugt
-                        und <strong>nicht</strong> an den Server gesendet.
+                        {{ t('pages.security.totp.descriptionText') }}
                     </div>
                 </div>
             </VCardItem>
@@ -189,21 +194,24 @@ watch([secret, digits, period, algorithm, label], () => {
                         <div class="px-4">
                             <VRow>
                                 <VCol cols="12">
-                                    <VTextField v-model="label" label="Label" placeholder="Meine App" />
+                                    <VTextField v-model="label" :label="t('pages.security.totp.label')"
+                                        :placeholder="t('pages.security.totp.labelPlaceholder')" />
                                 </VCol>
                                 <VCol cols="12">
-                                    <VTextField v-model="secret" label="TOTP-Secret (Base32)"
-                                        placeholder="JBSWY3DPEHPK3PXP" />
+                                    <VTextField v-model="secret" :label="t('pages.security.totp.secret')"
+                                        :placeholder="t('pages.security.totp.secretPlaceholder')" />
                                 </VCol>
                                 <VCol cols="6">
-                                    <VSelect v-model="digits" :items="[6, 8]" label="Ziffern" />
+                                    <VSelect v-model="digits" :items="[6, 8]"
+                                        :label="t('pages.security.totp.digits')" />
                                 </VCol>
                                 <VCol cols="6">
-                                    <VSelect v-model="period" :items="[15, 30, 45, 60]" label="Zeitschritt (Sek.)" />
+                                    <VSelect v-model="period" :items="[15, 30, 45, 60]"
+                                        :label="t('pages.security.totp.period')" />
                                 </VCol>
                                 <VCol cols="12">
                                     <VSelect v-model="algorithm" :items="['SHA-1', 'SHA-256', 'SHA-512']"
-                                        label="Algorithmus" />
+                                        :label="t('pages.security.totp.algorithm')" />
                                 </VCol>
                             </VRow>
 
@@ -213,7 +221,7 @@ watch([secret, digits, period, algorithm, label], () => {
                                     {{ code }}
                                 </div>
                                 <VBtn class="mt-8" color="primary" variant="tonal" size="small" @click="copyCode">
-                                    Kopieren
+                                    {{ t('pages.security.totp.copy') }}
                                 </VBtn>
                             </div>
 
@@ -230,23 +238,23 @@ watch([secret, digits, period, algorithm, label], () => {
                 <VCard>
                     <VCardText>
                         <div class="px-4 text-center">
-                            <h3 class="mb-4">QR Code</h3>
+                            <h3 class="mb-4">{{ t('pages.security.totp.qrCode') }}</h3>
                             <div v-if="qrCodeUrl" class="d-flex justify-center mb-4">
-                                <img :src="qrCodeUrl" alt="TOTP QR Code" width="200" height="200"
+                                <img :src="qrCodeUrl" :alt="t('pages.security.totp.qrCode')" width="200" height="200"
                                     style="border: 1px solid #ccc;" />
                             </div>
                             <div v-else class="d-flex justify-center mb-4">
                                 <div
                                     style="width: 200px; height: 200px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
-                                    <span class="text-caption">QR Code wird generiert...</span>
+                                    <span class="text-caption">{{ t('pages.security.totp.qrCodeGenerating') }}</span>
                                 </div>
                             </div>
                             <div class="text-caption">
-                                Scanne diesen QR-Code mit deiner TOTP-App
+                                {{ t('pages.security.totp.scanQrCode') }}
                             </div>
                             <div class="mt-4">
                                 <VBtn color="primary" variant="outlined" size="small" @click="generateQRCode">
-                                    QR-Code neu generieren
+                                    {{ t('pages.security.totp.regenerateQrCode') }}
                                 </VBtn>
                             </div>
                         </div>

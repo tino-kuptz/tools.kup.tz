@@ -1,9 +1,11 @@
 <script setup>
-useHead({
-    title: 'JSON Formatter',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.formatting.json.title'),
     meta: [
         {
-            description: 'Erlaubt das interaktive Browsen eines JSON-Objektes.',
+            description: t('pages.formatting.json.description'),
         },
     ],
 })
@@ -29,38 +31,36 @@ const format = () => {
     try {
         const data = JSON.parse(json.value);
         if (!data) {
-            $toast.error('Ungültiges JSON', {
+            $toast.error(t('common.errors.invalidJson'), {
                 position: "bottom-center",
             })
             return;
         }
         json.value = JSON.stringify(data, null, 2);
-        $toast.success('JSON wurde formattiert', {
+        $toast.success(t('common.errors.jsonFormatted'), {
             position: "bottom-center",
         })
     } catch (e) {
-        $toast.error('Ungültiges JSON\n' + e.message, {
+        $toast.error(t('common.errors.invalidJson') + '\n' + e.message, {
             position: "bottom-center",
         })
     }
 }
 
-import ObjectTreeMain from '~/components/tools/json-formatter/ObjectTreeMain.vue'
+import ObjectTreeMain from '~/components/tools/json-formatter/ObjectTreeMain.vue';
 </script>
 <template>
     <div>
-        <h2 class="mb-2">JSON Formatter</h2>
+        <h2 class="mb-2">{{ t('pages.formatting.json.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kannst du JSON-Daten formatieren und lesbar machen. Einfach den JSON-Text in
-                        das Textfeld einfügen und auf "Format JSON" klicken. Das Tool wird den JSON-Text analysieren und
-                        ihn in einem lesbaren Format ausgeben.
+                        {{ t('pages.formatting.json.descriptionText') }}
                     </div>
                 </div>
             </VCardItem>
@@ -70,13 +70,13 @@ import ObjectTreeMain from '~/components/tools/json-formatter/ObjectTreeMain.vue
             <VCol cols="12" lg="4">
                 <VCard>
                     <VCardText class="px-2">
-                        <h3 class="mb-3">JSON Text</h3>
+                        <h3 class="mb-3">{{ t('pages.formatting.json.jsonText') }}</h3>
                         <textarea v-model="json" class="form-control w-100"
-                            placeholder="Paste your JSON here"></textarea>
+                            :placeholder="t('pages.formatting.json.placeholder')"></textarea>
                     </VCardText>
                     <VCardActions>
                         <VBtn @click="format" color="primary" class="w-100">
-                            Format JSON
+                            {{ t('pages.formatting.json.formatButton') }}
                         </VBtn>
                     </VCardActions>
                 </VCard>

@@ -1,9 +1,11 @@
 <script setup>
-useHead({
-    title: 'DNS Scanner',
+const { t, locale } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.dns.scan.title'),
     meta: [
         {
-            description: 'Versucht eine Webseite möglichst genau abzuscannen.',
+            description: t('pages.dns.scan.description'),
         },
     ],
 })
@@ -24,14 +26,14 @@ const isValidDomain = (domain) => {
 
 const doRequest = async () => {
     if (!domain.value) {
-        $toast.error('Bitte gebe eine Domain ein', {
+        $toast.error(t('pages.dns.scan.errors.noDomain'), {
             position: "bottom-center",
         })
         return;
     }
 
     if (!isValidDomain(domain.value)) {
-        $toast.error('Die Domain scheint nicht gültig zu sein.\nBitte versuche es erneut.', {
+        $toast.error(t('pages.dns.scan.errors.invalidDomain'), {
             position: "bottom-center",
         });
         return;
@@ -43,17 +45,17 @@ const doRequest = async () => {
         if (data) {
             response.value = data;
 
-            $toast.success(response.value.records.length + ' DNS-Records gefunden.', {
+            $toast.success(t('pages.dns.scan.recordsFound', { count: response.value.records.length }), {
                 position: "bottom-center",
             })
         } else {
-            $toast.error('Fehler beim Abrufen der NS-Daten', {
+            $toast.error(t('pages.dns.scan.errors.fetchError'), {
                 position: "bottom-center",
             })
         }
     } catch (e) {
         console.error(e.stack);
-        $toast.error('Fehler beim Abrufen der NS-Daten\n' + e.message, {
+        $toast.error(t('pages.dns.scan.errors.fetchError') + '\n' + e.message, {
             position: "bottom-center",
         })
     } finally {
@@ -69,20 +71,17 @@ const isEmptyResolvedEntry = (entry) => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">DNS Scanner</h2>
+        <h2 class="mb-2">{{ t('pages.dns.scan.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('pages.dns.scan.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kann eine Webseite gescannt werden, um Informationen über diese zu bekommen.
-                        Dabei werden verschiedene DNS-Records abgefragt, um Informationen über die Domain zu
-                        erhalten.<br>
-                        Dieses Tool ist nützlich, wenn du eine Domain zu einem neuen Anbieter migrieren möchtest,
-                        allerdings keinen Zugriff auf die ursprüngliche Zone hast.
+                        {{ t('pages.dns.scan.description1') }}<br>
+                        {{ t('pages.dns.scan.description2') }}
                     </div>
                 </div>
             </VCardItem>
@@ -90,50 +89,48 @@ const isEmptyResolvedEntry = (entry) => {
 
         <VCard>
             <VCardText>
-                <h3 class="mb-3">Domain</h3>
-                <p>Hier kannst du die Domain angeben, die du scannen möchtest.
-                    Bitte gebe hier nur die Domain ein, ohne Protokoll oder ähnlichem (z.B. <code>kup.tz</code>)</p>
+                <h3 class="mb-3">{{ t('pages.dns.scan.domain') }}</h3>
+                <p>{{ t('pages.dns.scan.domainDescription') }}</p>
                 <p>
-                    Die Verwendung dieses Tools <strong>verbraucht {{ get_tool_by_url('/dns/scan').tokens }} Token pro
-                        Abfrage</strong>. Bitte beachte, dass du nur eine begrenzte Anzahl an Token zur Verfügung hast.
+                    {{ t('pages.dns.scan.tokenUsage', {
+                        tokens: get_tool_by_url('/dns/scan', locale.value)?.tokens || 0
+                    }) }}
                 </p>
                 <p>
-                    Scan-Ergebnisse werden für bis zu einer Stunde zwischengespeichert. Wenn du die Domain
-                    erneut scannst, wird das Ergebnis möglicherweise nicht sofort aktualisiert.
-                    Wenn eine zwischengespeicherte Abfrage zurückgegeben wird, werden dir keine Tokens abgezogen.
+                    {{ t('pages.dns.scan.cache') }}
                 </p>
-                <VTextField v-model="domain" class="w-100" label="Domain" placeholder="example.com"
-                    :disabled="isLoading" />
+                <VTextField v-model="domain" class="w-100" :label="t('common.domain')"
+                    :placeholder="t('common.placeholder.domain')" :disabled="isLoading" />
                 <VBtn color="primary" class="mt-4" :loading="isLoading" @click="doRequest">
-                    Abfragen
+                    {{ t('pages.dns.scan.query') }}
                 </VBtn>
             </VCardText>
             <VCardText class="px-2">
                 <div v-if="isLoading" class="px-4">
-                    <h3 class="mb-3">NS Records</h3>
+                    <h3 class="mb-3">{{ t('pages.dns.scan.records') }}</h3>
 
                     <VProgressCircular indeterminate color="primary" class="me-1" />
-                    DNS-Records werden abgerufen...
+                    {{ t('pages.dns.scan.loading') }}
 
                 </div>
                 <div v-else-if="response" class="text-h6 mb-1 px-4">
-                    <h3 class="mb-3">DNS Records</h3>
+                    <h3 class="mb-3">{{ t('pages.dns.scan.records') }}</h3>
 
                     <VAlert v-if="response.truncated" type="warning" border="start" color="red" outlined class="mb-3">
                         <p>
-                            Die weitere Auflösung der DNS-Records wurde abgebrochen, da die Antwort zu lang war.
+                            {{ t('pages.dns.scan.truncated.title') }}
                         </p>
                         <p class="mb-0">
-                            Die unten geführte Liste ist nicht vollständig.
+                            {{ t('pages.dns.scan.truncated.message') }}
                         </p>
                     </VAlert>
 
                     <div>
                         <VDataTable :headers="[
-                            { title: 'Domain', value: 'domain' },
-                            { title: 'Typ', value: 'type' },
-                            { title: 'Wert', value: 'value' },
-                            { title: 'Aufgelöst', value: 'resolve' },
+                            { title: t('pages.dns.scan.table.domain'), value: 'domain' },
+                            { title: t('pages.dns.scan.table.type'), value: 'type' },
+                            { title: t('pages.dns.scan.table.value'), value: 'value' },
+                            { title: t('pages.dns.scan.table.resolved'), value: 'resolve' },
                         ]" :items="response.records" item-value="ns" class="elevation-1">
                             <template #item.domain="{ item }">
                                 <code>{{ item.domain }}</code>
@@ -152,7 +149,7 @@ const isEmptyResolvedEntry = (entry) => {
                                     <code>{{ ip }}</code>
                                 </div>
                                 <div v-if="item.type === 'A' || item.type === 'AAAA'">
-                                    <small>(siehe "Wert")</small>
+                                    <small>{{ t('pages.dns.scan.table.seeValue') }}</small>
                                 </div>
                                 <div class="py-1" v-else-if="isEmptyResolvedEntry(item) && item.type == 'CNAME'">
                                     -

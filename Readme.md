@@ -1,54 +1,54 @@
 # tools.kup.tz
 
-Eine serverlose Webseite mit diversen Tools, gehostet auf Cloudflare.
+A serverless website with various tools, hosted on Cloudflare.
 
 ## Motivation
 
-Hin und wieder gibt es einige Sachen, die ich händisch mache, die mit Programm allerdings viel schneller wären. Ein Beispiel: herausfinden, bei welchem Anbieter nun genau noch mal eine Webseite liegt.
+Every now and then there are some things that I do manually, which would be much faster with a program. An example: finding out which provider a website is hosted with.
 
-Da sich solche Sachen häufen, habe ich entschieden, hierfür eine Tools-Webseite zu bauen. Wenn ich ein Tool benötige, welches sich hier reindumpen lässt, kommt das hier rein.
+Since such things accumulate, I decided to build a tools website for this. When I need a tool that fits here, it goes in here.
 
-## Mitarbeit
+## Contributing
 
-Wenn jemand nice Tools hat, kann ich die gerne mit reinmischen. Dafür einfach nen Merge Request stellen.
+If someone has nice tools, I'm happy to include them. Just create a merge request.
 
-Ich weise jetzt schon mal darauf hin, dass ich nicht die Zeit habe, mich immer direkt um alles zu kümmern. Es kann also durchaus sein, dass ihr etwas warten müsst, bis ich mich zurück melde.
+I'd like to point out now that I don't have the time to take care of everything immediately. So you may have to wait a bit until I get back to you.
 
-## Initiale Projektphase
+## Initial Project Phase
 
-Ich nehme dieses Projekt nicht so 100% ernst. Bitte seht mir nach, wenn ich (gerade in der Anfangszeit) ein Commit mit 30 geänderten Dateien und <code>fdsajkhfdsakf</code> als Beschreibung reinhaue.
+I'm not taking this project 100% seriously. Please bear with me if I (especially in the beginning) commit 30 changed files with <code>fdsajkhfdsakf</code> as the description.
 
-## Technisches Geplänkel
+## Technical Details
 
-Infos, um das Projekt schnell zu blicken.
+Info to quickly understand the project.
 
 ### Hosting
 
-Das Hosting liegt bei Cloudflare Pages. 
+Hosting is on Cloudflare Pages. 
 
-In Hintergrund ist eine D1-Datenbank angebunden.
+A D1 database is connected in the background.
 
-Das Schema für diese findet sich in `db.sql`.
+The schema for this can be found in `db.sql`.
 
 ### Tokens
 
-Da einige Tools Servercode benötigen, und ich der Idiot bin dessen Name oben auf der Rechnung steht, nutzt dieses Tool anonymisierte IP-Adressen um Verbräuche zu trocken.
+Since some tools require server code, and I'm the idiot whose name is at the top of the bill, this tool uses anonymized IP addresses to track usage.
 
-Jedes IP-Subnetz (IPv4: /28, IPv6: /104) hat pro Tag 1.000 "Tokens", die verwendet werden können.<br>Einzelne API-Endpunkte verbrauchen unterschiedlich viele Tokens.
+Each IP subnet (IPv4: /28, IPv6: /104) has 1,000 "tokens" per day that can be used.<br>Individual API endpoints consume different amounts of tokens.
 
-Wenn jemand sich das selber hosten möchte und an der Logik rumspielen möchte: In `server/utils/usage.js` ist die Logik zum Sammeln und Auswerten der Punkte.<br>
-In `utils/toolList.js` ist die primäre Tool-Liste (aus der auch die Sidebar und die Startseite generiert wird) - aus dieser werden auch die Tokens serverseitig beim Tracken genommen.
+If someone wants to host this themselves and wants to play around with the logic: In `server/utils/usage.js` is the logic for collecting and evaluating the points.<br>
+In `utils/toolList.js` is the primary tool list (from which the sidebar and homepage are also generated) - the tokens are also taken from this server-side when tracking.
 
-### Externe Projekte
+### External Projects
 
-Zu diesem Projekt gehört ebenfalls das Projekt [tino-kuptz/397625878.xyz](https://github.com/tino-kuptz/397625878.xyz). Das wird im HTTP-Log-Tool genutzt, und protokolliert HTTP-Requests an `*.397625878.xyz`.
+This project also includes the project [tino-kuptz/397625878.xyz](https://github.com/tino-kuptz/397625878.xyz). This is used in the HTTP-Log-Tool and logs HTTP requests to `*.397625878.xyz`.
 
 ### CT-Logs
 
-Informationen zu den Logs finden sich in `/utils/ctLogList.json`.  
-Die Datei wurde stumpf von `https://www.gstatic.com/ct/log_list/v3/log_list.json` heruntergeladen.
+Information about the logs can be found in `/utils/ctLogList.json`.  
+The file was simply downloaded from `https://www.gstatic.com/ct/log_list/v3/log_list.json`.
 
 ## Template
 
-Das folgende Template wird für dieses Projekt genutzt:<br>
+The following template is used for this project:<br>
 https://github.com/themeselection/sneat-vuetify-nuxtjs-admin-template-free

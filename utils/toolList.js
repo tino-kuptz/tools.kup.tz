@@ -1,229 +1,263 @@
+// Helper function to get translated value
+const getCurrentLocale = () => {
+    const locale = typeof useI18n !== 'undefined' ? useI18n().locale.value : 'de';
+    return locale;
+}
+
+const getTranslated = (obj, locale = null) => {
+    if (!obj || typeof obj !== 'object') return obj;
+    if (obj.de !== undefined || obj.en !== undefined) {
+        const loc = locale || getCurrentLocale();
+        return obj[loc] || obj.de || obj.en || obj;
+    }
+    return obj;
+}
+
 const tools = [
     {
-        name: "JSON Formatter",
-        description: "Zeigt JSON-Objekte lesbar an und erlaubt Browsing von diesen.",
+        name: { de: "JSON Formatter", en: "JSON Formatter" },
+        description: { de: "Zeigt JSON-Objekte lesbar an und erlaubt Browsing von diesen.", en: "Displays JSON objects in a readable format and allows browsing them." },
         link: "/formatting/json",
-        category: ["Formattierung"],
+        category: [{ de: "Formattierung", en: "Formatting" }],
         tags: ["JSON"],
         tokens: 0,
     },
     {
-        name: "Bilder zu Base64",
-        description: "Wandelt Bilder so um, dass sie direkt eingebettet werden können.",
+        name: { de: "Bilder zu Base64", en: "Images to Base64" },
+        description: { de: "Wandelt Bilder so um, dass sie direkt eingebettet werden können.", en: "Converts images so they can be directly embedded." },
         link: "/formatting/image-base64",
-        category: ["Bilder", "Formattierung"],
+        category: [{ de: "Bilder", en: "Images" }, { de: "Formattierung", en: "Formatting" }],
         tags: ["Base64", "Bilder"],
         tokens: 0,
     },
     {
-        name: "CSV Konverter",
-        description: "Wandelt verschiedene CSV-Arten zueinander um.",
+        name: { de: "CSV Konverter", en: "CSV Converter" },
+        description: { de: "Wandelt verschiedene CSV-Arten zueinander um.", en: "Converts different CSV formats to each other." },
         link: "/formatting/csv",
-        category: ["Formattierung"],
+        category: [{ de: "Formattierung", en: "Formatting" }],
         tags: ["CSV"],
         tokens: 0,
     },
     {
-        name: "FRITZ!Box XML zu CSV",
-        description: "Wandelt ein FRITZ!Box XML Adressbuch zu CSV um.",
+        name: { de: "FRITZ!Box XML zu CSV", en: "FRITZ!Box XML to CSV" },
+        description: { de: "Wandelt ein FRITZ!Box XML Adressbuch zu CSV um.", en: "Converts a FRITZ!Box XML address book to CSV." },
         link: "/formatting/fritzbox-xml2csv",
-        category: ["Formattierung"],
+        category: [{ de: "Formattierung", en: "Formatting" }],
         tags: ["FRITZ!Box", "XML", "CSV"],
         tokens: 0,
     },
     {
-        name: "DNS Scanner",
-        description: "Suche so viele Records wie möglich von einer Domäne.",
+        name: { de: "DNS Scanner", en: "DNS Scanner" },
+        description: { de: "Suche so viele Records wie möglich von einer Domäne.", en: "Search for as many records as possible from a domain." },
         link: "/dns/scan",
-        category: ["DNS"],
+        category: [{ de: "DNS", en: "DNS" }],
         tags: ["DNS"],
         tokens: 300,
     },
     {
-        name: "MX Resolver",
-        description: "Löst die E-Mail Server einer Domäne auf und versucht den Provider zu bestimmen.",
+        name: { de: "MX Resolver", en: "MX Resolver" },
+        description: { de: "Löst die E-Mail Server einer Domäne auf und versucht den Provider zu bestimmen.", en: "Resolves the email servers of a domain and attempts to determine the provider." },
         link: "/dns/mx",
-        category: ["DNS"],
+        category: [{ de: "DNS", en: "DNS" }],
         tags: ["DNS"],
         tokens: 100,
     },
     {
-        name: "NS Resolver",
-        description: "Löst die Nameserver einer Domäne auf und versucht den Provider zu bestimmen.",
+        name: { de: "NS Resolver", en: "NS Resolver" },
+        description: { de: "Löst die Nameserver einer Domäne auf und versucht den Provider zu bestimmen.", en: "Resolves the nameservers of a domain and attempts to determine the provider." },
         link: "/dns/ns",
-        category: ["DNS"],
+        category: [{ de: "DNS", en: "DNS" }],
         tags: ["DNS"],
         tokens: 100,
     },
     {
-        name: "Bcrypt Hash Generator",
-        description: "Erstellt oder validiert einen Bcrypt Hash im Browser aus einem Passwort.",
+        name: { de: "Bcrypt Hash Generator", en: "Bcrypt Hash Generator" },
+        description: { de: "Erstellt oder validiert einen Bcrypt Hash im Browser aus einem Passwort.", en: "Creates or validates a Bcrypt hash in the browser from a password." },
         link: "/hash/bcrypt",
-        category: ["Hashing"],
+        category: [{ de: "Hashing", en: "Hashing" }],
         tags: ["Cryptography", "Hashing"],
         tokens: 0,
     },
     {
-        name: "MD5 Hash Generator",
-        description: "Erstellt einen MD5 Hash aus einem Text oder einer Datei.",
+        name: { de: "MD5 Hash Generator", en: "MD5 Hash Generator" },
+        description: { de: "Erstellt einen MD5 Hash aus einem Text oder einer Datei.", en: "Creates an MD5 hash from text or a file." },
         link: "/hash/md5",
-        category: ["Hashing"],
+        category: [{ de: "Hashing", en: "Hashing" }],
         tags: ["Cryptography", "Hashing"],
         tokens: 0,
     },
     {
-        name: "SHA1 Hash Generator",
-        description: "Erstellt einen SHA1 Hash aus einem Text oder einer Datei.",
+        name: { de: "SHA1 Hash Generator", en: "SHA1 Hash Generator" },
+        description: { de: "Erstellt einen SHA1 Hash aus einem Text oder einer Datei.", en: "Creates a SHA1 hash from text or a file." },
         link: "/hash/sha1",
-        category: ["Hashing"],
+        category: [{ de: "Hashing", en: "Hashing" }],
         tags: ["Cryptography", "Hashing"],
         tokens: 0,
     },
     {
-        name: "SHA256 Hash Generator",
-        description: "Erstellt einen SHA256 Hash aus einem Text oder einer Datei.",
+        name: { de: "SHA256 Hash Generator", en: "SHA256 Hash Generator" },
+        description: { de: "Erstellt einen SHA256 Hash aus einem Text oder einer Datei.", en: "Creates a SHA256 hash from text or a file." },
         link: "/hash/sha256",
-        category: ["Hashing"],
+        category: [{ de: "Hashing", en: "Hashing" }],
         tags: ["Cryptography", "Hashing"],
         tokens: 0,
     },
     {
-        name: "RSA Keygen + Ver-/Entschlüsselung",
-        description: "Erstellt RSA 2048 Bit Keys im Browser und kann Daten ver- und entschlüsseln.",
+        name: { de: "RSA Keygen + Ver-/Entschlüsselung", en: "RSA Keygen + Encryption/Decryption" },
+        description: { de: "Erstellt RSA 2048 Bit Keys im Browser und kann Daten ver- und entschlüsseln.", en: "Creates RSA 2048-bit keys in the browser and can encrypt and decrypt data." },
         link: "/crypt/rsa",
-        category: ["Kryptografie"],
+        category: [{ de: "Kryptografie", en: "Cryptography" }],
         tags: ["Cryptography", "RSA"],
         tokens: 0,
     },
     {
-        name: "AES Ver-/Entschlüsselung",
-        description: "AES-256 Bit Ver- und Entschlüsselung mit AES-GCM im Browser.",
+        name: { de: "AES Ver-/Entschlüsselung", en: "AES Encryption/Decryption" },
+        description: { de: "AES-256 Bit Ver- und Entschlüsselung mit AES-GCM im Browser.", en: "AES-256-bit encryption and decryption with AES-GCM in the browser." },
         link: "/crypt/aes",
-        category: ["Kryptografie"],
+        category: [{ de: "Kryptografie", en: "Cryptography" }],
         tags: ["Cryptography", "AES"],
         tokens: 0,
     },
     {
-        name: "PFX/PKCS#12 Generator",
-        description: "Erstellt ein PFX/PKCS#12 Zertifikat aus Private Key, Certificate und optionaler CA-Chain.",
+        name: { de: "PFX/PKCS#12 Generator", en: "PFX/PKCS#12 Generator" },
+        description: { de: "Erstellt ein PFX/PKCS#12 Zertifikat aus Private Key, Certificate und optionaler CA-Chain.", en: "Creates a PFX/PKCS#12 certificate from Private Key, Certificate and optional CA chain." },
         link: "/crypt/pfx",
-        category: ["Kryptografie"],
+        category: [{ de: "Kryptografie", en: "Cryptography" }],
         tags: ["Cryptography", "PFX", "PKCS#12", "Certificate"],
         tokens: 0,
     },
     {
-        name: "CSR Generator & Parser",
-        description: "Erstellt oder parst Certificate Signing Requests (CSR) im Browser.",
+        name: { de: "CSR Generator & Parser", en: "CSR Generator & Parser" },
+        description: { de: "Erstellt oder parst Certificate Signing Requests (CSR) im Browser.", en: "Creates or parses Certificate Signing Requests (CSR) in the browser." },
         link: "/crypt/csr",
-        category: ["Kryptografie"],
+        category: [{ de: "Kryptografie", en: "Cryptography" }],
         tags: ["Cryptography", "CSR", "Certificate", "SSL"],
         tokens: 0,
     },
     {
-        name: "Zertifikat Parser",
-        description: "Parst und analysiert X.509 Zertifikate im PEM-Format, einschließlich Zertifikatsketten.",
+        name: { de: "Zertifikat Parser", en: "Certificate Parser" },
+        description: { de: "Parst und analysiert X.509 Zertifikate im PEM-Format, einschließlich Zertifikatsketten.", en: "Parses and analyzes X.509 certificates in PEM format, including certificate chains." },
         link: "/crypt/certificate",
-        category: ["Kryptografie"],
+        category: [{ de: "Kryptografie", en: "Cryptography" }],
         tags: ["Cryptography", "Certificate", "X.509", "SSL", "TLS"],
         tokens: 0,
     },
     {
-        name: "Fortschrittsbalken Generator",
-        description: "Erstellt einen Fortschrittsbalken als Bild mit verschiedenen Parametern.",
+        name: { de: "Fortschrittsbalken Generator", en: "Progress Bar Generator" },
+        description: { de: "Erstellt einen Fortschrittsbalken als Bild mit verschiedenen Parametern.", en: "Creates a progress bar as an image with various parameters." },
         link: "/image/progress-bar",
-        category: ["Bilder"],
+        category: [{ de: "Bilder", en: "Images" }],
         tags: ["Bilder", "Fortschrittsbalken"],
         tokens: 0,
     },
     {
-        name: "PNG zu ICO",
-        description: "Konvertiert PNG-Bilder zu ICO-Format. Ermöglicht die Auswahl der Auflösung.",
+        name: { de: "PNG zu ICO", en: "PNG to ICO" },
+        description: { de: "Konvertiert PNG-Bilder zu ICO-Format. Ermöglicht die Auswahl der Auflösung.", en: "Converts PNG images to ICO format. Allows selection of resolution." },
         link: "/image/png2ico",
-        category: ["Bilder"],
+        category: [{ de: "Bilder", en: "Images" }],
         tags: ["Bilder", "ICO", "PNG", "Icon"],
         tokens: 0,
     },
     {
-        name: "Kennwort Generator",
-        description: "Erstellt sichere Kennwörter basierend auf benutzerdefinierten Vorlagen.",
+        name: { de: "Kennwort Generator", en: "Password Generator" },
+        description: { de: "Erstellt sichere Kennwörter basierend auf benutzerdefinierten Vorlagen.", en: "Creates secure passwords based on custom templates." },
         link: "/security/password-generator",
-        category: ["Sicherheit"],
+        category: [{ de: "Sicherheit", en: "Security" }],
         tags: ["Kennwort", "Sicherheit"],
         tokens: 0,
     },
     {
-        name: "SPF Generator",
-        description: "Erstellt SPF-DNS-Einträge im Browser.",
+        name: { de: "SPF Generator", en: "SPF Generator" },
+        description: { de: "Erstellt SPF-DNS-Einträge im Browser.", en: "Creates SPF DNS entries in the browser." },
         link: "/security/spf",
-        category: ["Sicherheit", "DNS"],
+        category: [{ de: "Sicherheit", en: "Security" }, { de: "DNS", en: "DNS" }],
         tags: ["SPF", "DNS"],
         tokens: 0,
     },
     {
-        name: "DKIM Generator",
-        description: "Erstellt DKIM-Schlüssel im Browser und generiert den DNS-Eintrag.",
+        name: { de: "DKIM Generator", en: "DKIM Generator" },
+        description: { de: "Erstellt DKIM-Schlüssel im Browser und generiert den DNS-Eintrag.", en: "Creates DKIM keys in the browser and generates the DNS entry." },
         link: "/security/dkim",
-        category: ["Sicherheit", "DNS"],
+        category: [{ de: "Sicherheit", en: "Security" }, { de: "DNS", en: "DNS" }],
         tags: ["DKIM", "DNS"],
         tokens: 0,
     },
     {
-        name: "DMARC Generator",
-        description: "Erstellt DMARC-DNS-Einträge im Browser.",
+        name: { de: "DMARC Generator", en: "DMARC Generator" },
+        description: { de: "Erstellt DMARC-DNS-Einträge im Browser.", en: "Creates DMARC DNS entries in the browser." },
         link: "/security/dmarc",
-        category: ["Sicherheit", "DNS"],
+        category: [{ de: "Sicherheit", en: "Security" }, { de: "DNS", en: "DNS" }],
         tags: ["DMARC", "DNS"],
         tokens: 0,
     },
     {
-        name: "HTTP Request Tracker",
-        description: "Erlaubt es HTTP-Requests zu protokollieren.",
+        name: { de: "HTTP Request Tracker", en: "HTTP Request Tracker" },
+        description: { de: "Erlaubt es HTTP-Requests zu protokollieren.", en: "Allows logging of HTTP requests." },
         link: "/track/http",
-        category: ["Troubleshooting"],
+        category: [{ de: "Troubleshooting", en: "Troubleshooting" }],
         tags: ["HTTP", "Logs", "Tracking"],
         tokens: 100,
     },
     {
-        name: "TOTP Generator",
-        description: "Erzeugt zeitbasierte Einmalpasswörter (TOTP) nur im Browser.",
+        name: { de: "TOTP Generator", en: "TOTP Generator" },
+        description: { de: "Erzeugt zeitbasierte Einmalpasswörter (TOTP) nur im Browser.", en: "Generates time-based one-time passwords (TOTP) in the browser only." },
         link: "/security/totp",
-        category: ["Sicherheit"],
+        category: [{ de: "Sicherheit", en: "Security" }],
         tags: ["TOTP", "2FA", "OTP"],
         tokens: 0,
     },
 ];
 
-export const get_tools_categories = () => {
+// Helper to get translated tool
+const getTranslatedTool = (tool, locale = null) => {
+    if (!tool) return null;
+    const loc = locale || getCurrentLocale();
+    return {
+        ...tool,
+        name: getTranslated(tool.name, loc),
+        description: getTranslated(tool.description, loc),
+        category: tool.category.map(cat => getTranslated(cat, loc)),
+    };
+}
+
+export const get_tools_categories = (locale = null) => {
+    const loc = locale || getCurrentLocale();
     const categories = new Set();
     tools.forEach((tool) => {
         tool.category.forEach((cat) => {
-            categories.add(cat);
+            const translatedCat = getTranslated(cat, loc);
+            categories.add(translatedCat);
         });
     });
     return Array.from(categories).sort((a, b) => a.localeCompare(b));
 }
 
-export const get_tools_by_category = (category) => {
+export const get_tools_by_category = (category, locale = null) => {
+    const loc = locale || getCurrentLocale();
     const toolsList = [];
     tools.forEach((tool) => {
-        if (!tool.category.includes(category)) return;
-        if (toolsList.find((t) => t.name === tool.name)) return;
-        toolsList.push(tool);
+        const translatedCategories = tool.category.map(cat => getTranslated(cat, loc));
+        if (!translatedCategories.includes(category)) return;
+        const translatedTool = getTranslatedTool(tool, loc);
+        if (toolsList.find((t) => t.name === translatedTool.name)) return;
+        toolsList.push(translatedTool);
     });
     return toolsList;
 }
 
-export const get_tools = () => {
+export const get_tools = (locale = null) => {
+    const loc = locale || getCurrentLocale();
     const toolsList = [];
     tools.forEach((tool) => {
-        if (toolsList.find((t) => t.name === tool.name)) return;
-        toolsList.push(tool);
+        const translatedTool = getTranslatedTool(tool, loc);
+        if (toolsList.find((t) => t.name === translatedTool.name)) return;
+        toolsList.push(translatedTool);
     });
     return toolsList;
 }
 
-export const get_tool_by_url = (url) => {
+export const get_tool_by_url = (url, locale = null) => {
     const tool = tools.find((tool) => tool.link === url);
     if (!tool) return null;
-    return tool;
+    return getTranslatedTool(tool, locale);
 }

@@ -1,11 +1,13 @@
 <script setup>
 import { ref, watch } from 'vue';
 
-useHead({
-    title: 'SHA-256 Hash Generator',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.hash.sha256.title'),
     meta: [
         {
-            description: 'Online mal schnell einen SHA-256 Hash von einem Text oder einer Datei generieren.',
+            description: t('pages.hash.sha256.description'),
         },
     ],
 });
@@ -52,11 +54,11 @@ const onFileChange = (event) => {
 const { $toast } = useNuxtApp();
 const copyToClipboard = () => {
     navigator.clipboard.writeText(outputText.value).then(() => {
-        $toast.success('SHA-256-Hash wurde in die Zwischenablage kopiert', {
+        $toast.success(t('pages.hash.sha256.copySuccess'), {
             position: "bottom-center",
         });
     }).catch(err => {
-        $toast.error('Fehler beim Kopieren:\n' + err.message, {
+        $toast.error(t('pages.hash.sha256.copyError') + ':\n' + err.message, {
             position: "bottom-center",
         });
     });
@@ -74,20 +76,19 @@ watch(inputType, async (newValue) => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">SHA-256 Hash Generator</h2>
+        <h2 class="mb-2">{{ t('pages.hash.sha256.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kann ein SHA-256-Hash von einem Text oder einer Datei generiert werden.
+                        {{ t('pages.hash.sha256.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Der Hash wird im Browser generiert, der eingegebene Text oder die ausgewählte Datei wird nicht
-                        via Netzwerk an andere Geräte übertragen.
+                        {{ t('pages.hash.sha256.descriptionPrivacy') }}
                     </div>
                 </div>
             </VCardItem>
@@ -95,38 +96,40 @@ watch(inputType, async (newValue) => {
 
         <VCard>
             <VCardText class="p-2" v-if="inputType === 'text'">
-                <h3 class="mb-3">Text</h3>
-                <textarea v-model="inputText" class="w-100" placeholder="Zu hashender Text" rows="5"></textarea>
+                <h3 class="mb-3">{{ t('pages.hash.sha256.text') }}</h3>
+                <textarea v-model="inputText" class="w-100" :placeholder="t('pages.hash.sha256.textPlaceholder')"
+                    rows="5"></textarea>
                 <div class="pt-3">
                     <v-btn color="primary" @click="inputType = 'file'" role="button">
-                        Stattdessen eine Datei hashen
+                        {{ t('pages.hash.sha256.switchToFile') }}
                     </v-btn>
                 </div>
             </VCardText>
             <VCardText class="p-2" v-else>
-                <h3 class="mb-3">Datei</h3>
+                <h3 class="mb-3">{{ t('pages.hash.sha256.file') }}</h3>
                 <input type="file" @change="onFileChange" class="w-100" />
                 <div class="pt-3">
                     <v-btn color="primary" @click="inputType = 'text'" role="button">
-                        Stattdessen einen Text hashen
+                        {{ t('pages.hash.sha256.switchToText') }}
                     </v-btn>
                 </div>
             </VCardText>
 
             <VCardText>
-                <h3 class="mb-3">SHA-256 Hash</h3>
-                <input v-model="outputText" class="w-100" placeholder="SHA-256 Hash" rows="1" disabled />
+                <h3 class="mb-3">{{ t('pages.hash.sha256.hashLabel') }}</h3>
+                <input v-model="outputText" class="w-100" :placeholder="t('pages.hash.sha256.hashPlaceholder')" rows="1"
+                    disabled />
                 <div class="text-end">
                     <v-btn class="mt-2" color="primary" @click="copyToClipboard" :disabled="outputText === ''"
                         role="button">
                         <i class='bx bx-copy me-2'></i>
-                        Zwischenablage
+                        {{ t('pages.hash.sha256.clipboard') }}
                     </v-btn>
                 </div>
             </VCardText>
         </VCard>
         <div class="text-secondary mt-2">
-            <small>Powered by web crypto api</small>
+            <small v-html="t('pages.hash.sha256.poweredBy')"></small>
         </div>
     </div>
 </template>

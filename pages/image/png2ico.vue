@@ -1,11 +1,13 @@
 <script setup>
 import { onUnmounted, ref, watch } from 'vue';
 
-useHead({
-    title: 'PNG zu ICO',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.image.png2ico.title'),
     meta: [
         {
-            description: 'Konvertiert PNG-Bilder zu ICO-Format mit verschiedenen Auflösungen.',
+            description: t('pages.image.png2ico.description'),
         },
     ],
 });
@@ -17,22 +19,27 @@ const convertedImages = ref([]);
 const isConverting = ref(false);
 
 const resolutions = ref([
-    { size: 16, label: '16x16', checked: false },
-    { size: 32, label: '32x32', checked: false },
-    { size: 48, label: '48x48', checked: true, note: '(Google)' },
-    { size: 120, label: '120x120', checked: false, note: '(Apple iPhone legacy)' },
-    { size: 152, label: '152x152', checked: false, note: '(Apple iPad legacy)' },
-    { size: 167, label: '167x167', checked: false, note: '(Apple iPad)' },
-    { size: 180, label: '180x180', checked: false, note: '(Apple iPhone)' },
-    { size: 192, label: '192x192', checked: true, note: '(Android Home Screen)' },
-    { size: 256, label: '256x256', checked: true },
-    { size: 512, label: '512x512', checked: false, note: '(Experimentell - ICO unterstützt diese Auflösung eigentlich nicht)' },
+    { size: 16, label: '16x16', checked: false, noteKey: null },
+    { size: 32, label: '32x32', checked: false, noteKey: null },
+    { size: 48, label: '48x48', checked: true, noteKey: 'noteGoogle' },
+    { size: 120, label: '120x120', checked: false, noteKey: 'noteAppleIphoneLegacy' },
+    { size: 152, label: '152x152', checked: false, noteKey: 'noteAppleIpadLegacy' },
+    { size: 167, label: '167x167', checked: false, noteKey: 'noteAppleIpad' },
+    { size: 180, label: '180x180', checked: false, noteKey: 'noteAppleIphone' },
+    { size: 192, label: '192x192', checked: true, noteKey: 'noteAndroidHomeScreen' },
+    { size: 256, label: '256x256', checked: true, noteKey: null },
+    { size: 512, label: '512x512', checked: false, noteKey: 'noteExperimental' },
 ]);
+
+const getResolutionNote = (noteKey) => {
+    if (!noteKey) return '';
+    return ' ' + t(`pages.image.png2ico.resolutions.${noteKey}`);
+};
 
 watch(selectedFile, (newFile) => {
     if (newFile) {
         if (!newFile.type.startsWith('image/')) {
-            $toast.error('Bitte wählen Sie eine Bilddatei aus', {
+            $toast.error(t('pages.image.png2ico.selectImage'), {
                 position: "bottom-center",
             });
             selectedFile.value = null;
@@ -64,7 +71,7 @@ const resizeImage = (file, width, height) => {
                     if (blob) {
                         resolve(blob);
                     } else {
-                        reject(new Error('Fehler beim Erstellen des Bildes'));
+                        reject(new Error(t('pages.image.png2ico.createImageError')));
                     }
                 }, 'image/png');
             };
@@ -123,7 +130,7 @@ const pngToIcoEntry = async (pngBlob, size) => {
 
 const createIcoFile = async (images) => {
     if (images.length === 0) {
-        throw new Error('Keine Bilder zum Konvertieren');
+        throw new Error(t('pages.image.png2ico.noImagesToConvert'));
     }
 
     // Calculate header size: 6 bytes (ICO header) + 16 bytes per entry
@@ -184,7 +191,7 @@ const createIcoFile = async (images) => {
 
 const convert = async () => {
     if (!selectedFile.value) {
-        $toast.error('Bitte wählen Sie zuerst eine Datei aus', {
+        $toast.error(t('pages.image.png2ico.selectFileError'), {
             position: "bottom-center",
         });
         return;
@@ -192,7 +199,7 @@ const convert = async () => {
 
     const selectedResolutions = resolutions.value.filter(r => r.checked);
     if (selectedResolutions.length === 0) {
-        $toast.error('Bitte wählen Sie mindestens eine Auflösung aus', {
+        $toast.error(t('pages.image.png2ico.selectResolution'), {
             position: "bottom-center",
         });
         return;
@@ -218,7 +225,7 @@ const convert = async () => {
 
         convertedImages.value = images;
     } catch (error) {
-        $toast.error('Fehler beim Konvertieren: ' + error.message, {
+        $toast.error(t('pages.image.png2ico.convertError') + ': ' + error.message, {
             position: "bottom-center",
         });
     } finally {
@@ -237,7 +244,7 @@ const downloadPng = (image) => {
 
 const downloadIco = async () => {
     if (convertedImages.value.length === 0) {
-        $toast.error('Keine Bilder zum Download verfügbar', {
+        $toast.error(t('pages.image.png2ico.noImagesError'), {
             position: "bottom-center",
         });
         return;
@@ -257,11 +264,11 @@ const downloadIco = async () => {
             URL.revokeObjectURL(link.href);
         }, 100);
 
-        $toast.success('ICO-Datei erfolgreich heruntergeladen', {
+        $toast.success(t('pages.image.png2ico.downloadSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
-        $toast.error('Fehler beim Erstellen der ICO-Datei: ' + error.message, {
+        $toast.error(t('pages.image.png2ico.downloadError') + ': ' + error.message, {
             position: "bottom-center",
         });
     }
@@ -279,25 +286,22 @@ onUnmounted(() => {
 
 <template>
     <div>
-        <h2 class="mb-2">PNG zu ICO</h2>
+        <h2 class="mb-2">{{ t('pages.image.png2ico.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-2">
-                        Dieses Tool hilft dir, ein PNG-Bild in das ICO-Format zu konvertieren.
+                        {{ t('pages.image.png2ico.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-2">
-                        Da es sich bei ICO um ein Container-Format handelt, kannst du ein PNG-Bild vorher in
-                        verschiedene Auflösungen konvertieren lassen und dann als eine ICO-Datei herunterladen.
-                        Die einzelnen Bilder kannst du natürlich auch separat herunterladen.
+                        {{ t('pages.image.png2ico.descriptionNote') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Die Konvertierung wird vollständig im Browser durchgeführt, sodass keine Daten an einen Server
-                        gesendet werden. Ich bekomme deine Icons nie zu sehen.
+                        {{ t('pages.image.png2ico.descriptionPrivacy') }}
                     </div>
                 </div>
             </VCardItem>
@@ -307,29 +311,30 @@ onUnmounted(() => {
             <VCol cols="12" md="6">
                 <VCard>
                     <VCardTitle>
-                        <h2 class="mt-4 ml-2 mb-4">Einstellungen</h2>
+                        <h2 class="mt-4 ml-2 mb-4">{{ t('pages.image.png2ico.settings') }}</h2>
                     </VCardTitle>
                     <VCardText>
                         <div class="mb-4">
-                            <h3 class="mb-4">Datei auswählen</h3>
-                            <VFileInput v-model="selectedFile" label="PNG-Bild auswählen" accept="image/png" />
+                            <h3 class="mb-4">{{ t('pages.image.png2ico.selectFile') }}</h3>
+                            <VFileInput v-model="selectedFile" :label="t('pages.image.png2ico.selectFileLabel')"
+                                accept="image/png" />
                             <small v-if="selectedFile" class="text-disabled">
-                                Ausgewählt: {{ selectedFile.name }}
+                                {{ t('pages.image.png2ico.selected') }}: {{ selectedFile.name }}
                             </small>
                         </div>
 
                         <div class="mb-4">
-                            <h3 class="mb-3">Auflösungen auswählen</h3>
+                            <h3 class="mb-3">{{ t('pages.image.png2ico.selectResolutions') }}</h3>
                             <div v-for="res in resolutions" :key="res.size" class="mb-2">
                                 <VCheckbox v-model="res.checked"
-                                    :label="`${res.label}${res.note ? ' ' + res.note : ''}`" color="primary" />
+                                    :label="`${res.label}${getResolutionNote(res.noteKey)}`" color="primary" />
                             </div>
                         </div>
 
                         <VBtn color="primary" size="large" block :disabled="!selectedFile || isConverting"
                             :loading="isConverting" @click="convert">
                             <VIcon icon="bx-refresh" class="me-2" />
-                            Konvertieren
+                            {{ t('pages.image.png2ico.convert') }}
                         </VBtn>
                     </VCardText>
                 </VCard>
@@ -338,9 +343,8 @@ onUnmounted(() => {
             <VCol cols="12" md="6">
                 <VCard v-if="convertedImages.length > 0">
                     <VCardTitle>
-                        <h2 class="mt-4 ml-2 mb-2">Konvertierte Bilder</h2>
-                        <p class="ms-2 text-h6 mb-4">Den vollständigen ICO-Container kannst du am Ende dieser Box
-                            herunterladen.</p>
+                        <h2 class="mt-4 ml-2 mb-2">{{ t('pages.image.png2ico.converted') }}</h2>
+                        <p class="ms-2 text-h6 mb-4">{{ t('pages.image.png2ico.downloadFullIco') }}</p>
                     </VCardTitle>
                     <VCardText>
                         <VRow>
@@ -352,7 +356,7 @@ onUnmounted(() => {
                                         <div class="text-caption mb-2">{{ image.label }}</div>
                                         <VBtn color="primary" size="small" block @click="downloadPng(image)">
                                             <VIcon icon="bx-download" class="me-1" size="small" />
-                                            PNG
+                                            {{ t('pages.image.png2ico.downloadPng') }}
                                         </VBtn>
                                     </VCardText>
                                 </VCard>
@@ -361,7 +365,7 @@ onUnmounted(() => {
 
                         <VBtn color="success" size="large" block class="mt-4" @click="downloadIco">
                             <VIcon icon="bx-download" class="me-2" />
-                            ICO-Container herunterladen
+                            {{ t('pages.image.png2ico.downloadIco') }}
                         </VBtn>
                     </VCardText>
                 </VCard>

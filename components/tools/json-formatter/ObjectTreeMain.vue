@@ -1,5 +1,6 @@
 <script setup>
 const props = defineProps(['json']);
+const { t } = useI18n();
 
 const data = computed(() => {
     try {
@@ -16,20 +17,20 @@ const passFullKey = ref(false);
 <template>
     <v-card color="pink-darken-2" v-if="data === null">
         <v-card-title class="text-h5">
-            Ungültiges JSON
+            {{ t('pages.formatting.json.invalidJson') }}
         </v-card-title>
 
         <v-card-text>
-            Der Inhalt ist kein gültiges JSON. Bitte überprüfe den Inhalt und versuche es erneut.
+            {{ t('pages.formatting.json.invalidJsonMessage') }}
         </v-card-text>
     </v-card>
     <v-card v-else>
         <v-card-title class="text-h5">
-            JSON-Objekt
+            {{ t('pages.formatting.json.jsonObject') }}
         </v-card-title>
 
         <v-card-subtitle>
-            <v-switch v-model="passFullKey" label="Vollständigen Schlüsselpfad anzeigen" />
+            <v-switch v-model="passFullKey" :label="t('pages.formatting.json.showFullKeyPath')" />
         </v-card-subtitle>
 
         <v-card-text>

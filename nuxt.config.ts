@@ -153,6 +153,32 @@ export default defineNuxtConfig({
       '@pinia/nuxt',
       {}
     ], [
+      '@nuxtjs/i18n',
+      {
+        locales: [
+          {
+            code: 'de',
+            iso: 'de-DE',
+            name: 'Deutsch',
+            file: 'de.json',
+          },
+          {
+            code: 'en',
+            iso: 'en-US',
+            name: 'English',
+            file: 'en.json',
+          },
+        ],
+        defaultLocale: 'de',
+        strategy: 'prefix_except_default',
+        langDir: 'locales',
+        detectBrowserLanguage: {
+          useCookie: true,
+          cookieKey: 'i18n_redirected',
+          redirectOn: 'root',
+        },
+      },
+    ], [
       'nitro-cloudflare-dev',
       {}
     ], [
