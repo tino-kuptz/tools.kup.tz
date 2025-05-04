@@ -38,3 +38,8 @@ Jedes IP-Subnetz (IPv4: /28, IPv6: /104) hat pro Tag 1.000 "Tokens", die verwend
 
 Wenn jemand sich das selber hosten möchte und an der Logik rumspielen möchte: In `server/utils/usage.js` ist die Logik zum Sammeln und Auswerten der Punkte.<br>
 In `utils/toolList.js` ist die primäre Tool-Liste (aus der auch die Sidebar und die Startseite generiert wird) - aus dieser werden auch die Tokens serverseitig beim Tracken genommen.
+
+## Template
+
+Das folgende Template wird für dieses Projekt genutzt:<br>
+https://github.com/themeselection/sneat-vuetify-nuxtjs-admin-template-free
