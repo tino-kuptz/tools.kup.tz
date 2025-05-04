@@ -1,11 +1,12 @@
 {
   "name": "tools.kup.tz",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "nuxt dev",
-    "build": "node --max-old-space-size=4096 node_modules/nuxt/bin/nuxt.mjs build",
+    "build": "npx nuxt build",
+    "generate": "npx nuxt generate",
     "preview": "npm run build && wrangler pages dev",
     "deploy": "npm run build && wrangler pages deploy"
   },

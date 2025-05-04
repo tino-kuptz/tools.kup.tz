@@ -16,10 +16,6 @@ export default defineNuxtConfig({
     },
   },
 
-  nitro: {
-    preset: "cloudflare_pages",
-  },
-
   devtools: {
     enabled: true,
   },
@@ -121,7 +117,13 @@ export default defineNuxtConfig({
 
   build: {
     transpile: ['vuetify'],
+    ssr: true,
   },
+
+  features: {
+    inlineStyles: false,
+  },
+
 
   modules: ['@vueuse/nuxt', '@nuxtjs/device', '@pinia/nuxt', 'nitro-cloudflare-dev'],
   compatibilityDate: '2025-05-04',
