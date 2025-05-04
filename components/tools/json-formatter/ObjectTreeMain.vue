@@ -20,7 +20,7 @@ const passFullKey = ref(false);
         </v-card-title>
 
         <v-card-text>
-            Der Inhalt ist kein gültiges JSON. Bitte überprüfen Sie den Inhalt und versuchen Sie es erneut.
+            Der Inhalt ist kein gültiges JSON. Bitte überprüfe den Inhalt und versuche es erneut.
         </v-card-text>
     </v-card>
     <v-card v-else>

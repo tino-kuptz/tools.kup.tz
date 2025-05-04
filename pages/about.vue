@@ -57,7 +57,7 @@ const tokenStore = useTokenStore()
             <VCardText>
                 Tokens resetten sich täglich um 00:00 Uhr UTC. Das bedeutet, dass du jeden Tag eine neue
                 Menge an Tokens zur Verfügung haben, um die Werkzeuge zu nutzen. Wenn du deine Tokens
-                aufgebraucht hast, können Sie einfach warten, bis der nächste Tag beginnt, um wieder Zugriff auf die
+                aufgebraucht hast, kannst du einfach warten, bis der nächste Tag beginnt, um wieder Zugriff auf die
                 Funktionen zu erhalten.
             </VCardText>
             <VCardText>

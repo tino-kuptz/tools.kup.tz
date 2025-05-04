@@ -76,7 +76,7 @@ const doRequest = async () => {
                     </div>
                     <div class="text-h6 mb-1">
                         NS-Records (Nameserver-Records) sind ein wichtiger Bestandteil des DNS-Systems (Domain Name
-                        System).Sie geben an, welche Nameserver für eine bestimmte Domain zuständig sind.
+                        System). Sie geben an, welche Nameserver für eine bestimmte Domain zuständig sind.
                         Diese Nameserver sind dafür verantwortlich, Anfragen zu dieser Domain zu beantworten und
                         die entsprechenden DNS-Einträge bereitzustellen.
                     </div>

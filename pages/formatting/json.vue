@@ -58,7 +58,7 @@ import ObjectTreeMain from '~/components/tools/json-formatter/ObjectTreeMain.vue
                         Über dieses Tool
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool können Sie JSON-Daten formatieren und lesbar machen. Einfach den JSON-Text in
+                        Mit diesem Tool kannst du JSON-Daten formatieren und lesbar machen. Einfach den JSON-Text in
                         das Textfeld einfügen und auf "Format JSON" klicken. Das Tool wird den JSON-Text analysieren und
                         ihn in einem lesbaren Format ausgeben.
                     </div>
