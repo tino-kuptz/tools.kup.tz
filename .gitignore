@@ -50,3 +50,5 @@ public/mockServiceWorker.js
 !.env.example
 
 .DS_Store
+
+.wrangler

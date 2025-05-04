@@ -1,4 +1,13 @@
 <script setup>
+useHead({
+    title: 'JSON Formatter',
+    meta: [
+        {
+            description: 'Erlaubt das interaktive Browsen eines JSON-Objektes.',
+        },
+    ],
+})
+
 const json = ref(`{
   "tools": [
     {

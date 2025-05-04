@@ -1,5 +1,4 @@
 <script setup>
-//import { get_tools_categories, get_tools_bycategory } from '@/api/tools'
 useHead({
     title: 'Über diese Seite',
     meta: [
@@ -8,6 +7,9 @@ useHead({
         },
     ],
 })
+
+import { useTokenStore } from '../stores/tokens.js'
+const tokenStore = useTokenStore()
 </script>
 
 <template>
@@ -41,6 +43,37 @@ useHead({
                     <VIcon icon="bx-envelope" class="ms-2" />
                 </VBtn>
             </VCardActions>
+        </VCard>
+
+
+        <VCard class="mt-4" title="Über Tokens" id="tokens">
+            <VCardText>
+                Diese Webseite verwendet Tokens, um die Nutzung der verschiedenen Werkzeuge zu steuern. Tokens sind eine
+                Art von
+                virtuellem Guthaben, das Ihnen zur Verfügung steht, um die Funktionen der Seite zu nutzen. Bei einigen
+                Werkzeugen,
+                die serverseitige Verarbeitung erfordern, werden Tokens verbraucht. Dies hilft, die Serverlast zu
+                steuern und
+                sicherzustellen, dass die Seite nicht überlastet wird.
+            </VCardText>
+            <VCardText>
+                Es gibt keine Möglichkeit, Tokens zu kaufen oder zu erhöhen. Die Tokens werden automatisch
+                generiert und sind für jeden Benutzer gleich. Die Tokens sind pro IP-Subnetz gültig, sodass Sie
+                die Seite von verschiedenen Geräten oder Standorten aus nutzen können, ohne sich Gedanken über
+                den Tokenverbrauch machen zu müssen.
+            </VCardText>
+            <VCardText>
+                Tokens resetten sich täglich um 00:00 Uhr UTC. Das bedeutet, dass Sie jeden Tag eine neue
+                Menge an Tokens zur Verfügung haben, um die Werkzeuge zu nutzen. Wenn Sie Ihre Tokens
+                aufbrauchen, können Sie einfach warten, bis der nächste Tag beginnt, um wieder Zugriff auf die
+                Funktionen zu erhalten.
+            </VCardText>
+            <VCardText>
+                Aktuell befindest du dich im Subnetz <strong>{{ tokenStore.token.ip }}</strong>.<br>
+                Dein Subnetz hat <strong>{{ tokenStore.token.limit }}</strong> Tokens zur Verfügung. Davon sind
+                <strong>{{ tokenStore.token.used }}</strong> Tokens bereits verbraucht und noch
+                <strong>{{ tokenStore.token.remaining }}</strong> Tokens verfügbar.
+            </VCardText>
         </VCard>
     </div>
 </template>

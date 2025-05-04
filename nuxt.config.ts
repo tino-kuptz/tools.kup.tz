@@ -124,6 +124,14 @@ export default defineNuxtConfig({
     inlineStyles: false,
   },
 
+  nitro: {
+    preset: 'cloudflare-pages',
+    compressPublicAssets: true,
+    output: {
+      dir: 'dist',
+    },
+  },
+
 
   modules: ['@vueuse/nuxt', '@nuxtjs/device', '@pinia/nuxt', 'nitro-cloudflare-dev'],
   compatibilityDate: '2025-05-04',
