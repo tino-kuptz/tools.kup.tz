@@ -25,6 +25,7 @@ import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
             <span class="meta-key">&#8984;K</span>
           </span>
         </div>-->
+
         <div class="d-flex align-center ms-lg-n3" style="user-select: none;">
           <span class="d-none d-md-flex align-center text-disabled ms-2">
             <span class="me-2">tools.kup.tz</span>
@@ -35,12 +36,9 @@ import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 
         <TokenUsage />
 
-        <!--
-        <IconBtn href="https://github.com/themeselection/sneat-vuetify-nuxtjs-admin-template-free" target="_blank"
-          rel="noopener noreferrer">
+        <IconBtn href="https://github.com/tino-kuptz/tools.kup.tz" target="_blank" rel="noopener noreferrer">
           <VIcon icon="bxl-github" />
         </IconBtn>
-        -->
 
         <NavbarThemeSwitcher class="me-1" />
       </div>
