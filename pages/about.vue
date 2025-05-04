@@ -33,40 +33,36 @@ const tokenStore = useTokenStore()
                 Übrigens: diese Seite ist komplett Serverless auf Cloudflare Pages gehostet und nutzt die
                 Funktionen von Cloudflare, um die Werkzeuge bereitzustellen.
             </VCardText>
-            <VCardText>
-                Vielen Dank für Ihr Interesse und Ihre Geduld!
-            </VCardText>
-
-            <VCardActions>
-                <VBtn @click="location.href = 'mailto:tino@kup.tz'">
-                    Kontakt
-                    <VIcon icon="bx-envelope" class="ms-2" />
-                </VBtn>
-            </VCardActions>
         </VCard>
 
 
         <VCard class="mt-4" title="Über Tokens" id="tokens">
             <VCardText>
                 Diese Webseite verwendet Tokens, um die Nutzung der verschiedenen Werkzeuge zu steuern. Tokens sind eine
-                Art von
-                virtuellem Guthaben, das Ihnen zur Verfügung steht, um die Funktionen der Seite zu nutzen. Bei einigen
-                Werkzeugen,
-                die serverseitige Verarbeitung erfordern, werden Tokens verbraucht. Dies hilft, die Serverlast zu
-                steuern und
-                sicherzustellen, dass die Seite nicht überlastet wird.
+                Art von virtuellem Guthaben, das Ihnen zur Verfügung steht, um die Funktionen der Seite zu nutzen. Bei
+                einigen Werkzeugen, die serverseitige Verarbeitung erfordern, werden Tokens verbraucht. Dies hilft,
+                die Serverlast zu steuern und sicherzustellen, dass die Seite nicht überlastet wird.
+            </VCardText>
+            <VCardText>
+                Die Tokens sollen ebenfalls Missbrauch verhindern. Immerhin bin ich der Betreiber dieser Seite und
+                damit auch der Rechnungsempfänger seitens Cloudflare.
             </VCardText>
             <VCardText>
                 Es gibt keine Möglichkeit, Tokens zu kaufen oder zu erhöhen. Die Tokens werden automatisch
-                generiert und sind für jeden Benutzer gleich. Die Tokens sind pro IP-Subnetz gültig, sodass Sie
-                die Seite von verschiedenen Geräten oder Standorten aus nutzen können, ohne sich Gedanken über
-                den Tokenverbrauch machen zu müssen.
+                generiert und sind für jeden Benutzer gleich. Die Tokens sind pro IP-Subnetz gültig, sodass du
+                deine Token pro Internetverbindung, und nicht pro Gerät, erhältst. Das bedeutet auch, dass du
+                Tokens mit anderen Benutzern teilen kannst, die sich im selben Subnetz befinden. Aus diesem Grund
+                zeige ich nirgendswo, wie die Tokens eines Subnetzes verbraucht werden.
             </VCardText>
             <VCardText>
-                Tokens resetten sich täglich um 00:00 Uhr UTC. Das bedeutet, dass Sie jeden Tag eine neue
-                Menge an Tokens zur Verfügung haben, um die Werkzeuge zu nutzen. Wenn Sie Ihre Tokens
-                aufbrauchen, können Sie einfach warten, bis der nächste Tag beginnt, um wieder Zugriff auf die
+                Tokens resetten sich täglich um 00:00 Uhr UTC. Das bedeutet, dass du jeden Tag eine neue
+                Menge an Tokens zur Verfügung haben, um die Werkzeuge zu nutzen. Wenn du deine Tokens
+                aufgebraucht hast, können Sie einfach warten, bis der nächste Tag beginnt, um wieder Zugriff auf die
                 Funktionen zu erhalten.
+            </VCardText>
+            <VCardText>
+                Diese Seite ist Open Source. Wenn du mal mehr Tokens brauchst, als du pro Tag bekommst, kannst du
+                sie auch selber hosten und die Token-Limits anpassen. Der Quellcode ist auf GitHub verfügbar.
             </VCardText>
             <VCardText>
                 Aktuell befindest du dich im Subnetz <strong>{{ tokenStore.token.ip }}</strong>.<br>
