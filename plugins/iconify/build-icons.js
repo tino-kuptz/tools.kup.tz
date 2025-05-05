@@ -17,24 +17,24 @@ import { cleanupSVG, importDirectory, isEmptyColor, parseColors, runSVGO } from 
 import { getIcons, getIconsCSS, stringToIcon } from '@iconify/utils';
 const sources = {
     svg: [
-    // {
-    //   dir: 'assets/images/iconify-svg',
-    //   monotone: true,
-    //   prefix: 'custom',
-    // },
-    // {
-    //   dir: 'emojis',
-    //   monotone: false,
-    //   prefix: 'emoji',
-    // },
+        // {
+        //   dir: 'assets/images/iconify-svg',
+        //   monotone: true,
+        //   prefix: 'custom',
+        // },
+        // {
+        //   dir: 'emojis',
+        //   monotone: false,
+        //   prefix: 'emoji',
+        // },
     ],
     icons: [
-    // 'mdi:home',
-    // 'mdi:account',
-    // 'mdi:login',
-    // 'mdi:logout',
-    // 'octicon:book-24',
-    // 'octicon:code-square-24',
+        // 'mdi:home',
+        // 'mdi:account',
+        // 'mdi:login',
+        // 'mdi:logout',
+        // 'octicon:book-24',
+        // 'octicon:code-square-24',
     ],
     json: [
         // Custom JSON file
@@ -189,13 +189,12 @@ const target = join(__dirname, 'icons.css');
     // Generate CSS from collected icons
     const cssContent = allIcons
         .map(iconSet => getIconsCSS(iconSet, Object.keys(iconSet.icons), {
-        iconSelector: '.{prefix}-{name}',
-        mode: 'mask',
-    }))
+            iconSelector: '.{prefix}-{name}',
+            mode: 'mask',
+        }))
         .join('\n');
     // Save the CSS to a file
     await fs.writeFile(target, cssContent, 'utf8');
-    console.log(`Saved CSS to ${target}!`);
 })().catch(err => {
     console.error(err);
 });

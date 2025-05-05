@@ -8,6 +8,14 @@ const tools = [
         tokens: 0,
     },
     {
+        name: "DNS Scanner",
+        description: "Suche so viele Records wie möglich von einer Webseite.",
+        link: "/dns/scan",
+        category: "DNS",
+        tags: ["DNS"],
+        tokens: 300,
+    },
+    {
         name: "MX Resolver",
         description: "Löst die E-Mail Server von einer Domäne auf.",
         link: "/dns/mx",
@@ -22,6 +30,38 @@ const tools = [
         category: "DNS",
         tags: ["DNS"],
         tokens: 100,
+    },
+    {
+        name: "Bcrypt Hash Generator",
+        description: "Erstellt einen Bcrypt Hash im Browser aus einem Passwort.",
+        link: "/hash/bcrypt",
+        category: "Hashing",
+        tags: ["Cryptography", "Hashing"],
+        tokens: 0,
+    },
+    {
+        name: "MD5 Hash Generator",
+        description: "Erstellt einen MD5 Hash aus einem Text oder einer Datei.",
+        link: "/hash/md5",
+        category: "Hashing",
+        tags: ["Cryptography", "Hashing"],
+        tokens: 0,
+    },
+    {
+        name: "SHA1 Hash Generator",
+        description: "Erstellt einen SHA1 Hash aus einem Text oder einer Datei.",
+        link: "/hash/sha1",
+        category: "Hashing",
+        tags: ["Cryptography", "Hashing"],
+        tokens: 0,
+    },
+    {
+        name: "SHA256 Hash Generator",
+        description: "Erstellt einen SHA256 Hash aus einem Text oder einer Datei.",
+        link: "/hash/sha256",
+        category: "Hashing",
+        tags: ["Cryptography", "Hashing"],
+        tokens: 0,
     },
 ];
 

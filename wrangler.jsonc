@@ -16,4 +16,10 @@
       "database_id": "3488b165-d128-4c48-bf19-6f4e15bd2990"
     },
   ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "11d2c889658e44f7afcfdedaf6ec7fe7"
+    }
+  ]
 }

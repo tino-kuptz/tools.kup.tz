@@ -11,11 +11,9 @@ const theToggleButton = ref(null);
 const popupOffset = ref({ top: 0, right: 0 });
 const recalculatePopupOffset = () => {
     if (theToggleButton.value) {
-        console.log({ value: theToggleButton.value });
         const rect = theToggleButton.value.getBoundingClientRect();
         popupOffset.value.top = (rect.top + window.scrollY + rect.height + 5) + 'px';
         popupOffset.value.right = (window.innerWidth - rect.right - rect.width) + 'px';
-        console.log('Popup offset:', popupOffset.value);
     } else {
         console.error('theToggleButton is not defined');
     }
