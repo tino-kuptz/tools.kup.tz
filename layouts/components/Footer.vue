@@ -5,30 +5,16 @@
       &copy;
       {{ new Date().getFullYear() }}
 
-      <a
-        href="https://www.tino-kuptz.de/"
-        target="noopener noreferrer"
-        class="mx-1"
-      >Tino Kuptz.</a>
+      <a href="https://www.tino-kuptz.de/" target="noopener noreferrer" class="mx-1">Tino Kuptz.</a>
 
-      Theme 
-      by <a
-        href="https://themeselection.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-primary ms-1"
-      >ThemeSelection</a>
+      Theme
+      by <a href="https://themeselection.com" target="_blank" rel="noopener noreferrer"
+        class="text-primary ms-1">ThemeSelection</a>
     </span>
     <!-- 👉 Footer: right content -->
-    <span class="d-md-flex gap-x-4 text-primary d-none">
-      <a
-        href="https://www.tino-kuptz.de/impressum/"
-        target="noopener noreferrer"
-      >Impressum</a>
-      <a
-        href="https://www.tino-kuptz.de/datenschutzerklaerung/"
-        target="noopener noreferrer"
-      >Datenschutz</a>
+    <span class="d-md-flex gap-x-4 text-primary d-block">
+      <a href="https://www.tino-kuptz.de/impressum/" target="noopener noreferrer">Impressum</a>
+      <a href="https://www.tino-kuptz.de/datenschutzerklaerung/" target="noopener noreferrer">Datenschutz</a>
     </span>
   </div>
 </template>
