@@ -33,11 +33,21 @@ export const trackClientTokens = async (event, tokens, reason, param) => {
 export const getClientUsageLimits = async (event) => {
     const ip = getClientAnonymousIp(event);
 
+    if (!event.context.cloudflare) {
+        return {
+            ip: ip * "_emulated",
+            used: 0,
+            limit: 0,
+            remaining: 0,
+        };
+    }
+
     const stmt = event.context.cloudflare.env.DB
         .prepare('SELECT SUM(token_count) AS tokens FROM tokens WHERE tracking_ip = ? AND tracking_date = ?;')
         .bind(ip, new Date().toISOString().split('T')[0]);
+    const results = ((await stmt.run()).results[0]);
 
-    const used = (await stmt.run()).results[0].tokens;
+    const used = results && results[0] && results[0].tokens ? results[0].tokens * 1 : 0;
     const limit = 1000;
     const remaining = limit - used;
 

@@ -91,6 +91,7 @@ export default defineNuxtConfig({
         '@images': fileURLToPath(new URL('./assets/images/', import.meta.url)),
         '@styles': fileURLToPath(new URL('./assets/styles/', import.meta.url)),
         '@configured-variables': fileURLToPath(new URL('./assets/styles/variables/_template.scss', import.meta.url)),
+        'pinia': fileURLToPath(new URL('./node_modules/pinia/dist/pinia.mjs', import.meta.url)),
       },
     },
 
@@ -100,6 +101,7 @@ export default defineNuxtConfig({
 
     optimizeDeps: {
       exclude: ['vuetify'],
+      include: ['pinia'],
       entries: [
         './**/*.vue',
       ],

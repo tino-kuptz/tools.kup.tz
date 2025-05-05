@@ -1,11 +1,10 @@
-import { getClientUsageLimits } from "../../utils/usage.js";
 
 export default defineEventHandler(async (event) => {
     try {
         return {
-            success: true, data: {
-
-            }, usage: await getClientUsageLimits(event)
+            success: true,
+            data: {},
+            usage: await getClientUsageLimits(event)
         };
     } catch (error) {
         console.error('Error fetching usage limits:', error.stack);

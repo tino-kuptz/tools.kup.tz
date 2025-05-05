@@ -26,11 +26,8 @@ export const useTokenStore = defineStore('tokenStore', {
         ipAddress: (state) => state.token.ip,
     },
     actions: {
-        setToken(newToken) {
-            this.token = newToken;
-        },
-        clearToken() {
-            this.token = null;
+        setToken(token) {
+            this.token = token;
         },
         async fetch(initial = false) {
             try {
