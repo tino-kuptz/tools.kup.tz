@@ -55,6 +55,38 @@ const copyToClipboard = () => {
         });
     });
 };
+
+const checkingPassword = ref('');
+const checkingHash = ref(null);
+const checkingState = ref('initial');
+
+watch(checkingHash, () => checkingState.value = 'initial');
+watch(checkingPassword, () => checkingState.value = 'initial');
+
+const checkHash = () => {
+    if (checkingState.value == 'loading') {
+        return;
+    }
+
+    checkingState.value = 'loading';
+    const checking = {
+        password: checkingPassword.value,
+        hash: checkingHash.value,
+    };
+    bcrypt.compare(checkingPassword.value, checkingHash.value).then((result) => {
+        if (checking.hash != checkingHash.value || checking.password != checkingPassword.value) {
+            // Textfelder oben wurden geändert, also nicht weiter machen
+            return;
+        }
+        if (result) {
+            checkingState.value = 'correct';
+        } else {
+            checkingState.value = 'wrong';
+        }
+    }).catch(() => {
+        checkingState.value = 'wrong';
+    });
+};
 </script>
 <template>
     <div>
@@ -77,32 +109,83 @@ const copyToClipboard = () => {
             </VCardItem>
         </VCard>
 
-        <VCard>
-            <VCardText class="p-2">
-                <h3 class="mb-3">Text</h3>
-                <textarea v-model="inputText" class="w-100" placeholder="Zu hashender Text" rows="5"></textarea>
-                <h3 class="mb-3">Runden</h3>
-                <input v-model="rounds" type="number" class="w-100" placeholder="Runden" min="1" />
-            </VCardText>
+        <VRow>
+            <VCol cols="12" md="6">
+                <VCard>
+                    <VCardTitle>
+                        <h2 class="mt-4 ml-2 mb-4">Hash erstellen</h2>
+                    </VCardTitle>
+                    <VCardText class="p-2">
+                        <h3 class="mb-3">Text</h3>
+                        <textarea v-model="inputText" class="w-100" placeholder="Zu hashender Text" rows="5"></textarea>
+                        <h3 class="mb-3 pt-2">Runden</h3>
 
-            <VCardText>
-                <h3 class="mb-3">Bcrypt Hash</h3>
-                <input v-model="outputText" class="w-100" placeholder="Bcrypt Hash" rows="1" disabled />
-                <div v-if="isHashing" class="pt-2">
-                    <small class="text-secondary">
-                        <i class='bx bx-loader bx-spin'></i>
-                        Generiere Bcrypt-Hash...
-                    </small>
-                </div>
-                <div class="text-end">
-                    <v-btn class="mt-2" color="primary" @click="copyToClipboard" :disabled="outputText === ''"
-                        role="button">
-                        <i class='bx bx-copy me-2'></i>
-                        Zwischenablage
-                    </v-btn>
-                </div>
-            </VCardText>
-        </VCard>
+                        <VTextField v-model="rounds" class="w-100" label="Anzahl Runden" placeholder="12"
+                            :disabled="checkingState === 'loading'" type="number" min="1" />
+                    </VCardText>
+                    <VCardText>
+                        <h3 class="mb-3 pt-2">Bcrypt Hash</h3>
+                        <input v-model="outputText" class="w-100" placeholder="Bcrypt Hash" rows="1" disabled />
+                        <div v-if="isHashing" class="pt-2">
+                            <small class="text-secondary">
+                                <i class='bx bx-loader bx-spin'></i>
+                                Generiere Bcrypt-Hash...
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            <v-btn class="mt-2" color="primary" @click="copyToClipboard" :disabled="outputText === ''"
+                                role="button">
+                                <i class='bx bx-copy me-2'></i>
+                                Zwischenablage
+                            </v-btn>
+                        </div>
+                    </VCardText>
+                </VCard>
+            </VCol>
+            <VCol cols="12" md="6">
+                <VCard class="h-100">
+                    <VCardTitle>
+                        <h2 class="mt-4 ml-2 mb-4">Hash überprüfen</h2>
+                    </VCardTitle>
+                    <VCardText class="p-2 mb-auto">
+                        <h3 class="mb-3">Kennwort</h3>
+                        <textarea v-model="checkingPassword" class="w-100" placeholder="Zu prüfendes Kennwort" rows="5"
+                            :disabled="checkingState === 'loading'"></textarea>
+                        <h3 class="mb-3 pt-2">Hash</h3>
+                        <VTextField v-model="checkingHash" class="w-100" label="Generierter Hash"
+                            placeholder="$2b$12$..." :disabled="checkingState === 'loading'" />
+
+                        <div :class="{ 'invisible': checkingState === 'initial' }">
+                            <h3 class="mb-3 pt-4">Ergebnis</h3>
+                            <p class="mb-0" v-if="checkingState === 'loading'">
+                                <i class='bx bx-loader bx-spin'></i>
+                                Validiere Hash...
+                            </p>
+                            <p class="mb-0" v-else-if="checkingState === 'correct'">
+                                <i class="bx bx-check text-success me-2"></i>
+                                Der Hash passt zu dem angegebenem Kennwort.
+                            </p>
+                            <p class="mb-0 " v-else-if="checkingState === 'wrong'">
+                                <i class="bx bx-error text-error me-2"></i>
+                                Der Hash passt nicht zu dem angegebenem Kennwort.
+                            </p>
+                            <p class="mb-0 " v-else>
+                                <i class="bx bx-error text-error me-2"></i>
+                                Bitte auf "Prüfen" klicken, um den Hash zu überprüfen.
+                            </p>
+                        </div>
+                    </VCardText>
+                    <VCardText>
+                        <div class="text-start">
+                            <v-btn color="primary" @click="checkHash" role="button"
+                                :disabled="checkingState === 'loading'">
+                                Prüfen
+                            </v-btn>
+                        </div>
+                    </VCardText>
+                </VCard>
+            </VCol>
+        </VRow>
         <div class="text-secondary mt-2">
             <small>Powered by npm package <a href="https://www.npmjs.com/package/bcryptjs">bcrypt.js</a>.</small>
         </div>
@@ -119,5 +202,9 @@ textarea {
 
 div :deep(span.v-btn__content) {
     text-transform: none;
+}
+
+.invisible {
+    visibility: hidden;
 }
 </style>

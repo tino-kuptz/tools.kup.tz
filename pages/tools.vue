@@ -15,9 +15,8 @@ useHead({
     <div v-for="(category, index) in get_tools_categories()" :key="index">
       <h2 class="mt-4 mb-2">{{ category }}</h2>
       <VRow>
-        <!-- 👉 Influencing The Influencer -->
         <VCol cols="12" lg="4" md="6" v-for="(item, index) in get_tools_by_category(category)" :key="index">
-          <VCard>
+          <VCard class="h-100">
             <VCardItem>
               <VCardTitle class="my-0">
                 <div class="d-flex justify-space-between">
