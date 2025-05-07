@@ -16,6 +16,14 @@ const tools = [
         tokens: 0,
     },
     {
+        name: "CSV Konverter",
+        description: "Wandelt verschiedene CSV-Arten zueinander um.",
+        link: "/formatting/csv",
+        category: "Formattierung",
+        tags: ["CSV"],
+        tokens: 0,
+    },
+    {
         name: "DNS Scanner",
         description: "Suche so viele Records wie möglich von einer Domäne.",
         link: "/dns/scan",

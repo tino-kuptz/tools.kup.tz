@@ -1,6 +1,7 @@
-import { fileURLToPath } from 'node:url'
-import vuetify from 'vite-plugin-vuetify'
-import svgLoader from 'vite-svg-loader'
+import { fileURLToPath } from 'node:url';
+import vuetify from 'vite-plugin-vuetify';
+import svgLoader from 'vite-svg-loader';
+
 
 export default defineNuxtConfig({
   app: {
@@ -137,5 +138,6 @@ export default defineNuxtConfig({
 
 
   modules: ['@vueuse/nuxt', '@nuxtjs/device', '@pinia/nuxt', 'nitro-cloudflare-dev'],
+
   compatibilityDate: '2025-05-04',
 })
