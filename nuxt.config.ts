@@ -137,7 +137,27 @@ export default defineNuxtConfig({
   },
 
 
-  modules: ['@vueuse/nuxt', '@nuxtjs/device', '@pinia/nuxt', 'nitro-cloudflare-dev'],
+  modules: [
+    [
+      '@vueuse/nuxt',
+      {}
+    ],
+    [
+      '@nuxtjs/device',
+      {}
+    ], [
+      '@pinia/nuxt',
+      {}
+    ], [
+      'nitro-cloudflare-dev',
+      {}
+    ], [
+      'nuxt-cloudflare-analytics',
+      {
+        token: 'e5623f60cfb54573bbb098e1c13a932c',
+      },
+    ],
+  ],
 
   compatibilityDate: '2025-05-04',
 })

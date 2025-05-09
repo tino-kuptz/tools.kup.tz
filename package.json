@@ -21,6 +21,7 @@
     "md5": "^2.3.0",
     "nitro-cloudflare-dev": "^0.2.2",
     "nuxt": "3.14.1592",
+    "nuxt-cloudflare-analytics": "^1.0.8",
     "pinia": "^2.3.0",
     "prismjs": "^1.29.0",
     "roboto-fontface": "^0.10.0",
