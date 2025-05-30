@@ -3,7 +3,7 @@ const tools = [
         name: "JSON Formatter",
         description: "Zeigt JSON-Objekte lesbar an und erlaubt Browsing von diesen.",
         link: "/formatting/json",
-        category: "Formattierung",
+        category: ["Formattierung"],
         tags: ["JSON"],
         tokens: 0,
     },
@@ -11,7 +11,7 @@ const tools = [
         name: "Bilder zu Base64",
         description: "Wandelt Bilder so um, dass sie direkt eingebettet werden können.",
         link: "/formatting/image-base64",
-        category: "Formattierung",
+        category: ["Bilder", "Formattierung"],
         tags: ["Base64", "Bilder"],
         tokens: 0,
     },
@@ -19,7 +19,7 @@ const tools = [
         name: "CSV Konverter",
         description: "Wandelt verschiedene CSV-Arten zueinander um.",
         link: "/formatting/csv",
-        category: "Formattierung",
+        category: ["Formattierung"],
         tags: ["CSV"],
         tokens: 0,
     },
@@ -27,7 +27,7 @@ const tools = [
         name: "DNS Scanner",
         description: "Suche so viele Records wie möglich von einer Domäne.",
         link: "/dns/scan",
-        category: "DNS",
+        category: ["DNS"],
         tags: ["DNS"],
         tokens: 300,
     },
@@ -35,7 +35,7 @@ const tools = [
         name: "MX Resolver",
         description: "Löst die E-Mail Server einer Domäne auf und versucht den Provider zu bestimmen.",
         link: "/dns/mx",
-        category: "DNS",
+        category: ["DNS"],
         tags: ["DNS"],
         tokens: 100,
     },
@@ -43,7 +43,7 @@ const tools = [
         name: "NS Resolver",
         description: "Löst die Nameserver einer Domäne auf und versucht den Provider zu bestimmen.",
         link: "/dns/ns",
-        category: "DNS",
+        category: ["DNS"],
         tags: ["DNS"],
         tokens: 100,
     },
@@ -51,7 +51,7 @@ const tools = [
         name: "Bcrypt Hash Generator",
         description: "Erstellt oder validiert einen Bcrypt Hash im Browser aus einem Passwort.",
         link: "/hash/bcrypt",
-        category: "Hashing",
+        category: ["Hashing"],
         tags: ["Cryptography", "Hashing"],
         tokens: 0,
     },
@@ -59,7 +59,7 @@ const tools = [
         name: "MD5 Hash Generator",
         description: "Erstellt einen MD5 Hash aus einem Text oder einer Datei.",
         link: "/hash/md5",
-        category: "Hashing",
+        category: ["Hashing"],
         tags: ["Cryptography", "Hashing"],
         tokens: 0,
     },
@@ -67,7 +67,7 @@ const tools = [
         name: "SHA1 Hash Generator",
         description: "Erstellt einen SHA1 Hash aus einem Text oder einer Datei.",
         link: "/hash/sha1",
-        category: "Hashing",
+        category: ["Hashing"],
         tags: ["Cryptography", "Hashing"],
         tokens: 0,
     },
@@ -75,7 +75,7 @@ const tools = [
         name: "SHA256 Hash Generator",
         description: "Erstellt einen SHA256 Hash aus einem Text oder einer Datei.",
         link: "/hash/sha256",
-        category: "Hashing",
+        category: ["Hashing"],
         tags: ["Cryptography", "Hashing"],
         tokens: 0,
     },
@@ -83,7 +83,7 @@ const tools = [
         name: "RSA Keygen + Ver-/Entschlüsselung",
         description: "Erstellt RSA 2048 Bit Keys im Browser und kann Daten ver- und entschlüsseln.",
         link: "/crypt/rsa",
-        category: "Kryptografie",
+        category: ["Kryptografie"],
         tags: ["Cryptography", "RSA"],
         tokens: 0,
     },
@@ -91,8 +91,16 @@ const tools = [
         name: "AES Ver-/Entschlüsselung",
         description: "AES-256 Bit Ver- und Entschlüsselung mit AES-GCM im Browser.",
         link: "/crypt/rsa",
-        category: "Kryptografie",
+        category: ["Kryptografie"],
         tags: ["Cryptography", "RSA"],
+        tokens: 0,
+    },
+    {
+        name: "Fortschrittsbalken Generator",
+        description: "Erstellt einen Fortschrittsbalken als Bild mit verschiedenen Parametern.",
+        link: "/image/progress-bar",
+        category: ["Bilder"],
+        tags: ["Bilder", "Fortschrittsbalken"],
         tokens: 0,
     },
 ];
@@ -100,16 +108,17 @@ const tools = [
 export const get_tools_categories = () => {
     const categories = new Set();
     tools.forEach((tool) => {
-        if (categories.has(tool.category)) return;
-        categories.add(tool.category);
+        tool.category.forEach((cat) => {
+            categories.add(cat);
+        });
     });
-    return Array.from(categories);
+    return Array.from(categories).sort((a, b) => a.localeCompare(b));
 }
 
 export const get_tools_by_category = (category) => {
     const toolsList = [];
     tools.forEach((tool) => {
-        if (tool.category !== category) return;
+        if (!tool.category.includes(category)) return;
         if (toolsList.find((t) => t.name === tool.name)) return;
         toolsList.push(tool);
     });
