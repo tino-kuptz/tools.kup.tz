@@ -24,6 +24,14 @@ const tools = [
         tokens: 0,
     },
     {
+        name: "FRITZ!Box XML zu CSV",
+        description: "Wandelt ein FRITZ!Box XML Adressbuch zu CSV um.",
+        link: "/formatting/fritzbox-xml2csv",
+        category: ["Formattierung"],
+        tags: ["FRITZ!Box", "XML", "CSV"],
+        tokens: 0,
+    },
+    {
         name: "DNS Scanner",
         description: "Suche so viele Records wie möglich von einer Domäne.",
         link: "/dns/scan",
