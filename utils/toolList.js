@@ -111,6 +111,14 @@ const tools = [
         tags: ["Bilder", "Fortschrittsbalken"],
         tokens: 0,
     },
+    {
+        name: "Kennwort Generator",
+        description: "Erstellt sichere Kennwörter basierend auf benutzerdefinierten Vorlagen.",
+        link: "/security/password-generator",
+        category: ["Sicherheit"],
+        tags: ["Kennwort", "Sicherheit"],
+        tokens: 0,
+    },
 ];
 
 export const get_tools_categories = () => {
