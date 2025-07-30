@@ -11,7 +11,6 @@ useHead({
     ],
 })
 
-// Template structure
 const currentTemplate = reactive({
     avoidSimilarChars: false,
     length: 12,
@@ -26,14 +25,14 @@ const currentTemplate = reactive({
 const generatedPasswords = ref([])
 const showPasswords = ref(false)
 
-// Character sets
+// Verschiedene Kategorien
 const numbers = '0123456789'
 const lowercase = 'abcdefghijklmnopqrstuvwxyz'
 const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const normalSpecial = '-/:()&".?!'
 const extendedSpecial = '<>$€$|{}[]\\^`~'
 
-// Similar characters to avoid
+// Ähnliche Zeichen, die vermieden werden sollen
 const similarChars = {
     'l': '1',
     '1': 'l',
@@ -47,7 +46,7 @@ const similarChars = {
     '2': 'Z'
 }
 
-// Load last settings from localStorage
+// Letzte Einstellungen aus localStorage laden
 onMounted(() => {
     const savedSettings = localStorage.getItem('passwordGeneratorSettings')
     if (savedSettings) {
@@ -58,7 +57,7 @@ onMounted(() => {
 
 
 
-// Validate template requirements
+// Vorlagenanforderungen validieren
 const validateTemplate = computed(() => {
     const requiredCategories = [
         currentTemplate.numbers === 'require',
@@ -68,49 +67,76 @@ const validateTemplate = computed(() => {
         currentTemplate.extendedSpecial === 'require'
     ].filter(Boolean).length
 
+    // Prüfen, ob mindestens eine Kategorie erlaubt ist
+    const allowedCategories = [
+        currentTemplate.numbers === 'allow' || currentTemplate.numbers === 'require',
+        currentTemplate.lowercase === 'allow' || currentTemplate.lowercase === 'require',
+        currentTemplate.uppercase === 'allow' || currentTemplate.uppercase === 'require',
+        currentTemplate.normalSpecial === 'allow' || currentTemplate.normalSpecial === 'require',
+        currentTemplate.extendedSpecial === 'allow' || currentTemplate.extendedSpecial === 'require'
+    ].filter(Boolean).length
+
     return {
-        isValid: requiredCategories <= currentTemplate.length,
+        isValid: requiredCategories <= currentTemplate.length && allowedCategories > 0,
         requiredCategories,
-        availableLength: currentTemplate.length
+        availableLength: currentTemplate.length,
+        allowedCategories
     }
 })
 
-// Generate a single password
+const { $toast } = useNuxtApp()
+
+// Ein einzelnes Kennwort generieren
 const generateSinglePassword = () => {
-    if (!validateTemplate.value.isValid) {
-        alert(`Fehler: ${validateTemplate.value.requiredCategories} Kategorien sind erforderlich, aber das Kennwort hat nur ${validateTemplate.value.availableLength} Zeichen.`)
-        return null
-    }
 
+    // In dieses Array werden alle Zeichen des Kennworts gespeichert
+    // Am Ende wird das Kennwort gemischt, damit die erforderlichen Zeichen nicht zwangsweise am Anfang stehen
     const password = []
-    const requiredChars = []
 
-    // Step 1: Add one character from each required category
+    // Erforderliche Zeichen
     if (currentTemplate.numbers === 'require') {
-        const char = getRandomChar(numbers)
-        requiredChars.push(char)
+        let charSet = numbers
+        if (currentTemplate.avoidSimilarChars) {
+            charSet = charSet.split('').filter(char => !Object.keys(similarChars).includes(char)).join('')
+        }
+        const char = getRandomChar(charSet)
+        password.push(char)
     }
     if (currentTemplate.lowercase === 'require') {
-        const char = getRandomChar(lowercase)
-        requiredChars.push(char)
+        let charSet = lowercase
+        if (currentTemplate.avoidSimilarChars) {
+            charSet = charSet.split('').filter(char => !Object.keys(similarChars).includes(char)).join('')
+        }
+        const char = getRandomChar(charSet)
+        password.push(char)
     }
     if (currentTemplate.uppercase === 'require') {
-        const char = getRandomChar(uppercase)
-        requiredChars.push(char)
+        let charSet = uppercase
+        if (currentTemplate.avoidSimilarChars) {
+            charSet = charSet.split('').filter(char => !Object.keys(similarChars).includes(char)).join('')
+        }
+        const char = getRandomChar(charSet)
+        password.push(char)
     }
     if (currentTemplate.normalSpecial === 'require') {
-        const char = getRandomChar(normalSpecial)
-        requiredChars.push(char)
+        let charSet = normalSpecial
+        if (currentTemplate.avoidSimilarChars) {
+            charSet = charSet.split('').filter(char => !Object.keys(similarChars).includes(char)).join('')
+        }
+        const char = getRandomChar(charSet)
+        password.push(char)
     }
     if (currentTemplate.extendedSpecial === 'require') {
-        const char = getRandomChar(extendedSpecial)
-        requiredChars.push(char)
+        let charSet = extendedSpecial
+        if (currentTemplate.avoidSimilarChars) {
+            charSet = charSet.split('').filter(char => !Object.keys(similarChars).includes(char)).join('')
+        }
+        const char = getRandomChar(charSet)
+        password.push(char)
     }
 
-    // Add required characters to password
-    password.push(...requiredChars)
-
-    // Step 2: Build character pool for remaining characters
+    // Mit optionalen Zeichen auffüllen, indem wir erst einen String mit allen 
+    // optionalen/erforderlichen Zeichen erstellen...
     let charPool = ''
     if (currentTemplate.numbers === 'allow' || currentTemplate.numbers === 'require') {
         charPool += numbers
@@ -128,27 +154,35 @@ const generateSinglePassword = () => {
         charPool += extendedSpecial
     }
 
-    // Remove similar characters if option is enabled
+    // ... ggfs. ähnliche Zeichen entfernen...
     if (currentTemplate.avoidSimilarChars) {
         charPool = charPool.split('').filter(char => !Object.keys(similarChars).includes(char)).join('')
     }
 
-    // Step 3: Fill remaining length with random characters
+    // ... und das Kennwort dann mit den restlichen Zeichen auffüllen
     const remainingLength = currentTemplate.length - password.length
     for (let i = 0; i < remainingLength; i++) {
         const char = getRandomChar(charPool)
         password.push(char)
     }
 
-    // Step 4: Shuffle the password
+    // Nun mischen wir das Kennwort, damit die erforderlichen Zeichen nicht zwangsweise am Anfang stehen
     const shuffledPassword = shuffleArray(password)
     return shuffledPassword.join('')
 }
 
-// Generate multiple passwords using WebCrypto
+// Generieren aller Kennwörter
 const generatePasswords = async () => {
     if (!validateTemplate.value.isValid) {
-        alert(`Fehler: ${validateTemplate.value.requiredCategories} Kategorien sind erforderlich, aber das Kennwort hat nur ${validateTemplate.value.availableLength} Zeichen.`)
+        if (validateTemplate.value.allowedCategories === 0) {
+            $toast.error('Mindestens eine Zeichenkategorie muss erlaubt sein.', {
+                position: "bottom-center",
+            })
+        } else {
+            $toast.error(`${validateTemplate.value.requiredCategories} Kategorien sind erforderlich, aber das Kennwort hat nur ${validateTemplate.value.availableLength} Zeichen.`, {
+                position: "bottom-center",
+            })
+        }
         return
     }
 
@@ -164,14 +198,14 @@ const generatePasswords = async () => {
     showPasswords.value = true
 }
 
-// Get random character using WebCrypto
+// Zufälliges Zeichen mit WebCrypto erhalten
 const getRandomChar = (charSet) => {
     const array = new Uint8Array(1)
     crypto.getRandomValues(array)
     return charSet[array[0] % charSet.length]
 }
 
-// Shuffle array using WebCrypto
+// Array mit WebCrypto mischen
 const shuffleArray = (array) => {
     const shuffled = [...array]
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -183,31 +217,35 @@ const shuffleArray = (array) => {
     return shuffled
 }
 
-// Save current settings
+// Aktuelle Einstellungen speichern
 const saveSettings = () => {
     localStorage.setItem('passwordGeneratorSettings', JSON.stringify(currentTemplate))
 }
 
-// Auto-save settings when they change
+// Einstellungen automatisch speichern, wenn sie sich ändern
 watch(currentTemplate, () => {
     saveSettings()
 }, { deep: true })
 
 
 
-// Copy password to clipboard
+// Kennwort in die Zwischenablage kopieren
 const copyPassword = async (password) => {
     try {
         await navigator.clipboard.writeText(password)
-        // You could add a toast notification here
+        $toast.success('Kennwort wurde in die Zwischenablage kopiert', {
+            position: "bottom-center",
+        })
     } catch (err) {
-        console.error('Failed to copy password:', err)
+        $toast.error('Fehler beim Kopieren des Kennworts: ' + err.message, {
+            position: "bottom-center",
+        })
     }
 }
 
 const { global: theme } = useTheme()
 
-// Get character color for display
+// Zeichenfarbe für die Anzeige erhalten
 const getCharColor = (char) => {
     const isDark = theme.current.value.dark
 
@@ -292,13 +330,11 @@ const getCharColor = (char) => {
                                 { title: 'Nicht erlauben', value: 'forbid' }
                             ]" variant="outlined" class="mb-3" />
 
-                        <VAlert v-if="!validateTemplate.isValid" type="error" class="mb-4">
-                            {{ validateTemplate.requiredCategories }} Kategorien sind erforderlich, aber das Kennwort
-                            hat nur {{ validateTemplate.availableLength }} Zeichen.
-                        </VAlert>
+
 
                         <div class="d-flex gap-2">
-                            <VBtn @click="generatePasswords" color="success" :disabled="!validateTemplate.isValid">
+                            <VBtn @click="generatePasswords" color="success"
+                                :class="{ 'opacity-50': !validateTemplate.isValid }">
                                 Generieren
                             </VBtn>
                         </div>
