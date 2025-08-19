@@ -143,6 +143,14 @@ const tools = [
         tags: ["DMARC", "DNS"],
         tokens: 0,
     },
+    {
+        name: "HTTP Request Tracker",
+        description: "Erlaubt es HTTP-Requests zu protokollieren.",
+        link: "/track/http",
+        category: ["Troubleshooting"],
+        tags: ["HTTP", "Logs", "Tracking"],
+        tokens: 100,
+    },
 ];
 
 export const get_tools_categories = () => {

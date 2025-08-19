@@ -1,4 +1,4 @@
-const getClientAnonymousIp = (event) => {
+export const getClientAnonymousIp = (event) => {
     var ip = (event.headers.get('cf-connecting-ip') ? event.headers.get('cf-connecting-ip') : event.headers.get('x-forwarded-for').split(',')[0]) + "";
 
     if (ip.indexOf(':') < 0) {
@@ -30,6 +30,19 @@ export const trackClientTokens = async (event, tokens, reason, param) => {
         .bind(ip, new Date().toISOString().split('T')[0], tokens, reason, param);
 
     await stmt.run();
+}
+
+export const hasClientConsumedToken = async (event, reason, param) => {
+    const ip = getClientAnonymousIp(event);
+
+    const stmt = event.context.cloudflare.env.DB
+        .prepare('SELECT COUNT(1) AS cnt FROM tokens WHERE tracking_ip = ? AND tracking_date = ? AND reason_cat = ? AND reason_param = ?;')
+        .bind(ip, new Date().toISOString().split('T')[0], reason, param);
+
+    const results = ((await stmt.run()).results);
+    const alreadyConsumed = (results && results[0] && (results[0].cnt * 1) > 0);
+
+    return !!alreadyConsumed;
 }
 
 export const getClientUsageLimits = async (event) => {
