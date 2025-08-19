@@ -39,6 +39,10 @@ Jedes IP-Subnetz (IPv4: /28, IPv6: /104) hat pro Tag 1.000 "Tokens", die verwend
 Wenn jemand sich das selber hosten möchte und an der Logik rumspielen möchte: In `server/utils/usage.js` ist die Logik zum Sammeln und Auswerten der Punkte.<br>
 In `utils/toolList.js` ist die primäre Tool-Liste (aus der auch die Sidebar und die Startseite generiert wird) - aus dieser werden auch die Tokens serverseitig beim Tracken genommen.
 
+### Externe Projekte
+
+Zu diesem Projekt gehört ebenfalls das Projekt [tino-kuptz/397625878.xyz](https://github.com/tino-kuptz/397625878.xyz). Das wird im HTTP-Log-Tool genutzt, und protokolliert HTTP-Requests an `*.397625878.xyz`.
+
 ## Template
 
 Das folgende Template wird für dieses Projekt genutzt:<br>
