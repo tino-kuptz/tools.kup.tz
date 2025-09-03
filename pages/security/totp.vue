@@ -1,0 +1,204 @@
+<script setup>
+useHead({
+    title: 'TOTP Generator',
+});
+
+const secret = ref('');
+
+const digits = ref(6);
+const period = ref(30);
+const algorithm = ref('SHA-1'); // 'SHA-1' | 'SHA-256' | 'SHA-512'
+const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+const now = ref(Date.now());
+const code = ref('------');
+const isClient = ref(false);
+let timer = null;
+
+const { $toast } = useNuxtApp();
+
+onMounted(() => {
+    isClient.value = true;
+    timer = setInterval(() => {
+        now.value = Date.now();
+        updateCode();
+    }, 1000);
+    updateCode();
+    secret.value = (() => {
+        var ret = "";
+        for (var i = 0; i < 16; i++) {
+            ret += base32Alphabet[Math.floor(Math.random() * base32Alphabet.length)];
+        }
+        return ret;
+    })();
+});
+
+onBeforeUnmount(() => {
+    if (timer) clearInterval(timer);
+});
+
+const secondsRemaining = computed(() => {
+    const s = Math.floor(now.value / 1000);
+    return period.value - (s % period.value);
+});
+
+const progress = computed(() => {
+    return (secondsRemaining.value / period.value) * 100;
+});
+
+const copyCode = async () => {
+    try {
+        await navigator.clipboard.writeText(code.value);
+        $toast && $toast.success('Code kopiert', { position: 'bottom-center' });
+    } catch (e) {
+        $toast && $toast.error('Konnte Code nicht kopieren', { position: 'bottom-center' });
+    }
+};
+
+const sanitizeBase32 = (s) => s.replace(/\s+/g, '').toUpperCase();
+
+const base32ToBytes = (input) => {
+    const clean = sanitizeBase32(input);
+    const bytes = [];
+    let bits = 0;
+    let value = 0;
+    for (let i = 0; i < clean.length; i++) {
+        const idx = base32Alphabet.indexOf(clean[i]);
+        if (idx === -1) continue;
+        value = (value << 5) | idx;
+        bits += 5;
+        if (bits >= 8) {
+            bytes.push((value >>> (bits - 8)) & 0xff);
+            bits -= 8;
+        }
+    }
+    return new Uint8Array(bytes);
+};
+
+const numberTo8ByteArray = (num) => {
+    const bytes = new Uint8Array(8);
+    for (let i = 7; i >= 0; i--) {
+        bytes[i] = num & 0xff;
+        num = Math.floor(num / 256);
+    }
+    return bytes;
+};
+
+let cached = { key: null, cacheKey: '' };
+
+const getHmac = async (keyBytes, msgBytes, algo) => {
+    const cacheKey = algo + ':' + Array.from(keyBytes).join(',');
+    if (!cached.key || cached.cacheKey !== cacheKey) {
+        cached.key = await crypto.subtle.importKey(
+            'raw',
+            keyBytes,
+            { name: 'HMAC', hash: { name: algo } },
+            false,
+            ['sign']
+        );
+        cached.cacheKey = cacheKey;
+    }
+    const sig = await crypto.subtle.sign('HMAC', cached.key, msgBytes);
+    return new Uint8Array(sig);
+};
+
+const truncateToCode = (hmac, digitsVal) => {
+    const offset = hmac[hmac.length - 1] & 0x0f;
+    const p = ((hmac[offset] & 0x7f) << 24) |
+        ((hmac[offset + 1] & 0xff) << 16) |
+        ((hmac[offset + 2] & 0xff) << 8) |
+        (hmac[offset + 3] & 0xff);
+    const mod = 10 ** digitsVal;
+    const num = p % mod;
+    return num.toString().padStart(digitsVal, '0');
+};
+
+const updateCode = async () => {
+    if (!isClient.value) return;
+    if (!secret.value) { code.value = '------'; return; }
+    try {
+        const t = Math.floor((Date.now() / 1000) / period.value);
+        const counter = numberTo8ByteArray(t);
+        const keyBytes = base32ToBytes(secret.value);
+        const algoMap = { 'SHA-1': 'SHA-1', 'SHA-256': 'SHA-256', 'SHA-512': 'SHA-512' };
+        const mac = await getHmac(keyBytes, counter, algoMap[algorithm.value]);
+        code.value = truncateToCode(mac, digits.value);
+    } catch (e) {
+        code.value = 'Fehler';
+    }
+};
+
+watch([secret, digits, period, algorithm], () => {
+    updateCode();
+});
+</script>
+
+<template>
+    <div>
+        <h2 class="mb-2">TOTP Generator</h2>
+        <VCard color="secondary" variant="elevated" class="mb-4">
+            <VCardItem>
+                <div>
+                    <div class="text-overline mb-2">Über dieses Tool</div>
+                    <div class="text-h6 mb-1">
+                        TOTPs (Time-based One-Time Passwords) werden <strong>ausschließlich im Browser</strong>
+                        erzeugt
+                        und <strong>nicht</strong> an den Server gesendet.
+                    </div>
+                </div>
+            </VCardItem>
+        </VCard>
+        <VRow>
+            <VCol cols="12" md="6">
+                <VCard>
+                    <VCardText>
+                        <div class="px-4">
+                            <VRow>
+                                <VCol cols="12">
+                                    <VTextField v-model="secret" label="TOTP-Secret (Base32)"
+                                        placeholder="JBSWY3DPEHPK3PXP" />
+                                </VCol>
+                                <VCol cols="6">
+                                    <VSelect v-model="digits" :items="[6, 8]" label="Ziffern" />
+                                </VCol>
+                                <VCol cols="6">
+                                    <VSelect v-model="period" :items="[15, 30, 45, 60]" label="Zeitschritt (Sek.)" />
+                                </VCol>
+                                <VCol cols="12">
+                                    <VSelect v-model="algorithm" :items="['SHA-1', 'SHA-256', 'SHA-512']"
+                                        label="Algorithmus" />
+                                </VCol>
+                            </VRow>
+
+                            <div class="mt-12 d-flex text-center justify-center align-center flex-column">
+                                <div class="display-1 text-mono"
+                                    style="font-variant-numeric: tabular-nums; font-size: 3rem;">
+                                    {{ code }}
+                                </div>
+                                <VBtn class="mt-8" color="primary" variant="tonal" size="small" @click="copyCode">
+                                    Kopieren
+                                </VBtn>
+                            </div>
+
+                            <div class="mt-5 d-flex align-center">
+                                <VProgressLinear :model-value="progress" height="10" color="primary" class="me-3"
+                                    style="flex:1" />
+                                <div class="text-caption">{{ secondsRemaining }}s</div>
+                            </div>
+                        </div>
+                    </VCardText>
+                </VCard>
+            </VCol>
+            <VCol cols="12" md="6">
+
+            </VCol>
+        </VRow>
+    </div>
+
+</template>
+
+<style scoped>
+.text-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+</style>

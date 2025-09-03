@@ -151,6 +151,14 @@ const tools = [
         tags: ["HTTP", "Logs", "Tracking"],
         tokens: 100,
     },
+    {
+        name: "TOTP Generator",
+        description: "Erzeugt zeitbasierte Einmalpasswörter (TOTP) nur im Browser.",
+        link: "/security/totp",
+        category: ["Sicherheit"],
+        tags: ["TOTP", "2FA", "OTP"],
+        tokens: 0,
+    },
 ];
 
 export const get_tools_categories = () => {
