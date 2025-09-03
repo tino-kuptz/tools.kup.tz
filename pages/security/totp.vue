@@ -3,8 +3,10 @@ useHead({
     title: 'TOTP Generator',
 });
 
-const secret = ref('');
+import QRCode from 'qrcode';
 
+const secret = ref('');
+const label = ref('Meine App');
 const digits = ref(6);
 const period = ref(30);
 const algorithm = ref('SHA-1'); // 'SHA-1' | 'SHA-256' | 'SHA-512'
@@ -13,6 +15,7 @@ const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 const now = ref(Date.now());
 const code = ref('------');
 const isClient = ref(false);
+const qrCodeUrl = ref('');
 let timer = null;
 
 const { $toast } = useNuxtApp();
@@ -31,6 +34,7 @@ onMounted(() => {
         }
         return ret;
     })();
+    generateQRCode();
 });
 
 onBeforeUnmount(() => {
@@ -128,8 +132,38 @@ const updateCode = async () => {
     }
 };
 
-watch([secret, digits, period, algorithm], () => {
+const generateQRCode = async () => {
+    if (!isClient.value || !secret.value) return;
+
+    try {
+        // Generate otpauth:// URL for TOTP
+        const issuer = encodeURIComponent(label.value);
+        const secretParam = encodeURIComponent(secret.value);
+        const algorithmParam = algorithm.value.replace('SHA-', 'SHA').toLowerCase();
+        const digitsParam = digits.value;
+        const periodParam = period.value;
+
+        const otpauthUrl = `otpauth://totp/${issuer}:?secret=${secretParam}&issuer=${issuer}&algorithm=${algorithmParam}&digits=${digitsParam}&period=${periodParam}`;
+
+        // Generate QR code using qrcode library
+        qrCodeUrl.value = await QRCode.toDataURL(otpauthUrl, {
+            width: 200,
+            height: 200,
+            margin: 2,
+            color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+            }
+        });
+    } catch (error) {
+        console.error('Error generating QR code:', error);
+        qrCodeUrl.value = '';
+    }
+};
+
+watch([secret, digits, period, algorithm, label], () => {
     updateCode();
+    generateQRCode();
 });
 </script>
 
@@ -154,6 +188,9 @@ watch([secret, digits, period, algorithm], () => {
                     <VCardText>
                         <div class="px-4">
                             <VRow>
+                                <VCol cols="12">
+                                    <VTextField v-model="label" label="Label" placeholder="Meine App" />
+                                </VCol>
                                 <VCol cols="12">
                                     <VTextField v-model="secret" label="TOTP-Secret (Base32)"
                                         placeholder="JBSWY3DPEHPK3PXP" />
@@ -190,11 +227,37 @@ watch([secret, digits, period, algorithm], () => {
                 </VCard>
             </VCol>
             <VCol cols="12" md="6">
-
+                <VCard>
+                    <VCardText>
+                        <div class="px-4 text-center">
+                            <h3 class="mb-4">QR Code</h3>
+                            <div v-if="qrCodeUrl" class="d-flex justify-center mb-4">
+                                <img :src="qrCodeUrl" alt="TOTP QR Code" width="200" height="200"
+                                    style="border: 1px solid #ccc;" />
+                            </div>
+                            <div v-else class="d-flex justify-center mb-4">
+                                <div
+                                    style="width: 200px; height: 200px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
+                                    <span class="text-caption">QR Code wird generiert...</span>
+                                </div>
+                            </div>
+                            <div class="text-caption">
+                                Scanne diesen QR-Code mit deiner TOTP-App
+                            </div>
+                            <div class="mt-4">
+                                <VBtn color="primary" variant="outlined" size="small" @click="generateQRCode">
+                                    QR-Code neu generieren
+                                </VBtn>
+                            </div>
+                        </div>
+                    </VCardText>
+                </VCard>
             </VCol>
         </VRow>
+        <small class="text-muted d-block mt-3">
+            Powered by <a href="https://www.npmjs.com/package/qrcode">qrcode</a>.
+        </small>
     </div>
-
 </template>
 
 <style scoped>

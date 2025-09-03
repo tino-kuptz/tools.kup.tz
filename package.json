@@ -25,6 +25,7 @@
     "nuxt-cloudflare-analytics": "^1.0.8",
     "pinia": "^2.3.0",
     "prismjs": "^1.29.0",
+    "qrcode": "^1.5.4",
     "roboto-fontface": "^0.10.0",
     "sha1": "^1.1.1",
     "vue-flatpickr-component": "11.0.5",
