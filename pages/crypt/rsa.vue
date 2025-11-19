@@ -1,5 +1,4 @@
 <script setup>
-
 useHead({
     title: 'RSA Crypt online',
     meta: [
@@ -18,13 +17,44 @@ const isWorking = ref(false);
 const encryptedText = ref('');
 const decryptedText = ref('');
 
+const rsaKeySizes = [
+    { title: '1024 Bit', value: 1024 },
+    { title: '2048 Bit', value: 2048 },
+    { title: '4096 Bit', value: 4096 },
+];
+const rsaKeySize = ref(2048);
+
+// Konvertiert Base64-String zu PEM-Format
+const toPemFormat = (base64String, header, footer) => {
+    // Base64-String in 64-Zeichen-Zeilen aufteilen
+    const chunks = [];
+    for (let i = 0; i < base64String.length; i += 64) {
+        chunks.push(base64String.slice(i, i + 64));
+    }
+    return `${header}\n${chunks.join('\n')}\n${footer}`;
+};
+
+// Extrahiert Base64-String aus PEM-Format oder gibt den String zurück, falls bereits Base64
+const fromPemFormat = (pemString) => {
+    // Prüfe, ob es bereits PEM-Format ist
+    if (pemString.includes('-----BEGIN')) {
+        // Entferne Header, Footer und Whitespace
+        return pemString
+            .replace(/-----BEGIN[^-]+-----/g, '')
+            .replace(/-----END[^-]+-----/g, '')
+            .replace(/\s/g, '');
+    }
+    // Falls nicht PEM, entferne nur Whitespace (für Rückwärtskompatibilität)
+    return pemString.replace(/\s/g, '');
+};
+
 const generateKeys = async () => {
     isWorking.value = true;
     try {
         const keyPair = await window.crypto.subtle.generateKey(
             {
                 name: "RSA-OAEP",
-                modulusLength: 2048,
+                modulusLength: 4096,
                 publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
                 hash: { name: "SHA-256" },
             },
@@ -32,8 +62,12 @@ const generateKeys = async () => {
             ["encrypt", "decrypt"]
         );
 
-        rsaPublicKey.value = btoa(String.fromCharCode(...new Uint8Array(await window.crypto.subtle.exportKey("spki", keyPair.publicKey))));
-        rsaPrivateKey.value = btoa(String.fromCharCode(...new Uint8Array(await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey))));
+        const publicKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(await window.crypto.subtle.exportKey("spki", keyPair.publicKey))));
+        const privateKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey))));
+
+        // Konvertiere zu PEM-Format
+        rsaPublicKey.value = toPemFormat(publicKeyBase64, '-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----');
+        rsaPrivateKey.value = toPemFormat(privateKeyBase64, '-----BEGIN PRIVATE KEY-----', '-----END PRIVATE KEY-----');
 
         $toast.success('Schlüssel erfolgreich generiert', {
             position: "bottom-center",
@@ -50,9 +84,12 @@ const generateKeys = async () => {
 const encryptUsingPublicKey = async () => {
     isWorking.value = true;
     try {
+        // Extrahiere Base64-String aus PEM-Format falls nötig
+        const publicKeyBase64 = fromPemFormat(rsaPublicKey.value);
+
         const privateKey = await window.crypto.subtle.importKey(
             "spki",
-            Uint8Array.from(atob(rsaPublicKey.value), c => c.charCodeAt(0)),
+            Uint8Array.from(atob(publicKeyBase64), c => c.charCodeAt(0)),
             {
                 name: "RSA-OAEP",
                 hash: { name: "SHA-256" },
@@ -86,9 +123,12 @@ const encryptUsingPublicKey = async () => {
 const decryptUsingPrivateKey = async () => {
     isWorking.value = true;
     try {
+        // Extrahiere Base64-String aus PEM-Format falls nötig
+        const privateKeyBase64 = fromPemFormat(rsaPrivateKey.value);
+
         const privateKey = await window.crypto.subtle.importKey(
             "pkcs8",
-            Uint8Array.from(atob(rsaPrivateKey.value), c => c.charCodeAt(0)),
+            Uint8Array.from(atob(privateKeyBase64), c => c.charCodeAt(0)),
             {
                 name: "RSA-OAEP",
                 hash: { name: "SHA-256" },
@@ -138,7 +178,7 @@ const decryptUsingPrivateKey = async () => {
                         via Netzwerk an andere Geräte übertragen.
                     </div>
                     <div class="text-h6 mb-1 text-muted">
-                        Genutzt wird RSA-OAEP mit SHA-256er Hash, generiert werden 2018er Schlüssel.
+                        Genutzt wird RSA-OAEP mit SHA-256er Hash, generiert werden {{ rsaKeySize }}er Schlüssel.
                     </div>
                 </div>
             </VCardItem>
@@ -149,15 +189,24 @@ const decryptUsingPrivateKey = async () => {
                 <VRow>
                     <VCol cols="12" md="6">
                         <h3 class="mb-3">Öffentlicher Schlüssel</h3>
-                        <textarea v-model="rsaPublicKey" class="w-100" placeholder="Öffentlicher Schlüssel" rows="5"
+                        <textarea v-model="rsaPublicKey" class="w-100"
+                            placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----" rows="8"
                             :disabled="isWorking"></textarea>
+                        <small class="text-muted">PEM-Format</small>
                     </VCol>
                     <VCol cols="12" md="6">
                         <h3 class="mb-3">Privater Schlüssel</h3>
-                        <textarea v-model="rsaPrivateKey" class="w-100" placeholder="Privater Schlüssel" rows="5"
+                        <textarea v-model="rsaPrivateKey" class="w-100"
+                            placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----" rows="8"
                             :disabled="isWorking"></textarea>
+                        <small class="text-muted">PEM-Format</small>
                     </VCol>
-                    <VCol cols="12">
+                    <VCol cols="12" class="d-flex align-left align-center">
+                        <div style="width: 210px; display: inline-block; vertical-align: middle;" class="me-3">
+                            <VSelect v-model="rsaKeySize" :items="rsaKeySizes" label="Schlüsselgröße" density="compact"
+                                hide-details style="min-width: 0;" />
+                        </div>
+
                         <VBtn color="primary" @click="generateKeys" :disabled="isWorking" role="button">
                             <i class='bx bx-key me-2'></i>
                             Schlüssel generieren
@@ -199,6 +248,7 @@ textarea {
     padding: 10px;
     font-size: 16px;
     width: 100%;
+    font-family: monospace;
 }
 
 div :deep(span.v-btn__content) {

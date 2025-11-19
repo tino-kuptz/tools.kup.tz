@@ -43,6 +43,11 @@ In `utils/toolList.js` ist die primäre Tool-Liste (aus der auch die Sidebar und
 
 Zu diesem Projekt gehört ebenfalls das Projekt [tino-kuptz/397625878.xyz](https://github.com/tino-kuptz/397625878.xyz). Das wird im HTTP-Log-Tool genutzt, und protokolliert HTTP-Requests an `*.397625878.xyz`.
 
+### CT-Logs
+
+Informationen zu den Logs finden sich in `/utils/ctLogList.json`.  
+Die Datei wurde stumpf von `https://www.gstatic.com/ct/log_list/v3/log_list.json` heruntergeladen.
+
 ## Template
 
 Das folgende Template wird für dieses Projekt genutzt:<br>
