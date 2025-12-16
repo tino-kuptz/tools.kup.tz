@@ -136,6 +136,14 @@ const tools = [
         tokens: 0,
     },
     {
+        name: "PNG zu ICO",
+        description: "Konvertiert PNG-Bilder zu ICO-Format. Ermöglicht die Auswahl der Auflösung.",
+        link: "/image/png2ico",
+        category: ["Bilder"],
+        tags: ["Bilder", "ICO", "PNG", "Icon"],
+        tokens: 0,
+    },
+    {
         name: "Kennwort Generator",
         description: "Erstellt sichere Kennwörter basierend auf benutzerdefinierten Vorlagen.",
         link: "/security/password-generator",
