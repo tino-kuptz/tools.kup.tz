@@ -1,0 +1,41 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Pages
+    
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+
+    - name: setup node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: install dependencies
+      run: npm install
+
+    - name: replace git commit hash in footer
+      run: |
+        LONG_HASH="${{ github.sha }}"
+        SHORT_HASH="${LONG_HASH:0:7}"
+        perl -pi -e "s/{##LONG_GIT_COMMIT_HASH##}/${LONG_HASH}/g" layouts/components/Footer.vue
+        perl -pi -e "s/{##SHORT_GIT_COMMIT_HASH##}/${SHORT_HASH}/g" layouts/components/Footer.vue
+
+    - name: build application
+      run: npm run build
+
+    - name: deploy to cf
+      uses: cloudflare/wrangler-action@v3.12.0
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: 47ea99a6d03be6f9a59bc5e358ad3c7b
+        command: pages deploy
