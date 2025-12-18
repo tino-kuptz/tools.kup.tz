@@ -2,11 +2,13 @@
 import bcrypt from 'bcryptjs';
 import { ref, watch } from 'vue';
 
-useHead({
-    title: 'Bcrypt Hash Generator',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.hash.bcrypt.title'),
     meta: [
         {
-            description: 'Online mal schnell einen Bcrypt Hash von einem Text generieren.',
+            description: t('pages.hash.bcrypt.description'),
         },
     ],
 });
@@ -46,11 +48,11 @@ watch(rounds, updateHash);
 const { $toast } = useNuxtApp();
 const copyToClipboard = () => {
     navigator.clipboard.writeText(outputText.value).then(() => {
-        $toast.success('Bcrypt-Hash wurde in die Zwischenablage kopiert', {
+        $toast.success(t('pages.hash.bcrypt.copySuccess'), {
             position: "bottom-center",
         });
     }).catch(err => {
-        $toast.error('Fehler beim Kopieren:\n' + err.message, {
+        $toast.error(t('pages.hash.bcrypt.copyError') + ':\n' + err.message, {
             position: "bottom-center",
         });
     });
@@ -90,20 +92,19 @@ const checkHash = () => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">Bcrypt Hash Generator</h2>
+        <h2 class="mb-2">{{ t('pages.hash.bcrypt.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kann ein Bcrypt-Hash von einem Text generiert werden.
+                        {{ t('pages.hash.bcrypt.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Der eingegebene Text sowie der Hash wird im Browser generiert, nichts davon wird
-                        via Netzwerk an andere Geräte übertragen oder verlässt das Gerät.
+                        {{ t('common.privacy.noNetworkOrDevice') }}
                     </div>
                 </div>
             </VCardItem>
@@ -113,30 +114,33 @@ const checkHash = () => {
             <VCol cols="12" md="6">
                 <VCard>
                     <VCardTitle>
-                        <h2 class="mt-4 ml-2 mb-4">Hash erstellen</h2>
+                        <h2 class="mt-4 ml-2 mb-4">{{ t('pages.hash.bcrypt.createHash') }}</h2>
                     </VCardTitle>
                     <VCardText class="p-2">
-                        <h3 class="mb-3">Text</h3>
-                        <textarea v-model="inputText" class="w-100" placeholder="Zu hashender Text" rows="5"></textarea>
-                        <h3 class="mb-3 pt-2">Runden</h3>
+                        <h3 class="mb-3">{{ t('pages.hash.bcrypt.text') }}</h3>
+                        <textarea v-model="inputText" class="w-100"
+                            :placeholder="t('pages.hash.bcrypt.textPlaceholder')" rows="5"></textarea>
+                        <h3 class="mb-3 pt-2">{{ t('pages.hash.bcrypt.rounds') }}</h3>
 
-                        <VTextField v-model="rounds" class="w-100" label="Anzahl Runden" placeholder="12"
+                        <VTextField v-model="rounds" class="w-100" :label="t('pages.hash.bcrypt.roundsLabel')"
+                            :placeholder="t('pages.hash.bcrypt.roundsPlaceholder')"
                             :disabled="checkingState === 'loading'" type="number" min="1" />
                     </VCardText>
                     <VCardText>
-                        <h3 class="mb-3 pt-2">Bcrypt Hash</h3>
-                        <input v-model="outputText" class="w-100" placeholder="Bcrypt Hash" rows="1" disabled />
+                        <h3 class="mb-3 pt-2">{{ t('pages.hash.bcrypt.hashLabel') }}</h3>
+                        <input v-model="outputText" class="w-100" :placeholder="t('pages.hash.bcrypt.hashPlaceholder')"
+                            rows="1" disabled />
                         <div v-if="isHashing" class="pt-2">
                             <small class="text-secondary">
                                 <i class='bx bx-loader bx-spin'></i>
-                                Generiere Bcrypt-Hash...
+                                {{ t('pages.hash.bcrypt.generating') }}
                             </small>
                         </div>
                         <div class="text-end">
                             <v-btn class="mt-2" color="primary" @click="copyToClipboard" :disabled="outputText === ''"
                                 role="button">
                                 <i class='bx bx-copy me-2'></i>
-                                Zwischenablage
+                                {{ t('pages.hash.bcrypt.clipboard') }}
                             </v-btn>
                         </div>
                     </VCardText>
@@ -145,33 +149,35 @@ const checkHash = () => {
             <VCol cols="12" md="6">
                 <VCard class="h-100">
                     <VCardTitle>
-                        <h2 class="mt-4 ml-2 mb-4">Hash überprüfen</h2>
+                        <h2 class="mt-4 ml-2 mb-4">{{ t('pages.hash.bcrypt.checkHash') }}</h2>
                     </VCardTitle>
                     <VCardText class="p-2 mb-auto">
-                        <h3 class="mb-3">Kennwort</h3>
-                        <textarea v-model="checkingPassword" class="w-100" placeholder="Zu prüfendes Kennwort" rows="5"
+                        <h3 class="mb-3">{{ t('pages.hash.bcrypt.password') }}</h3>
+                        <textarea v-model="checkingPassword" class="w-100"
+                            :placeholder="t('pages.hash.bcrypt.passwordPlaceholder')" rows="5"
                             :disabled="checkingState === 'loading'"></textarea>
-                        <h3 class="mb-3 pt-2">Hash</h3>
-                        <VTextField v-model="checkingHash" class="w-100" label="Generierter Hash"
-                            placeholder="$2b$12$..." :disabled="checkingState === 'loading'" />
+                        <h3 class="mb-3 pt-2">{{ t('pages.hash.bcrypt.hashLabel') }}</h3>
+                        <VTextField v-model="checkingHash" class="w-100" :label="t('pages.hash.bcrypt.hashInputLabel')"
+                            :placeholder="t('pages.hash.bcrypt.hashInputPlaceholder')"
+                            :disabled="checkingState === 'loading'" />
 
                         <div :class="{ 'invisible': checkingState === 'initial' }">
-                            <h3 class="mb-3 pt-4">Ergebnis</h3>
+                            <h3 class="mb-3 pt-4">{{ t('pages.hash.bcrypt.result') }}</h3>
                             <p class="mb-0" v-if="checkingState === 'loading'">
                                 <i class='bx bx-loader bx-spin'></i>
-                                Validiere Hash...
+                                {{ t('pages.hash.bcrypt.validating') }}
                             </p>
                             <p class="mb-0" v-else-if="checkingState === 'correct'">
                                 <i class="bx bx-check text-success me-2"></i>
-                                Der Hash passt zu dem angegebenem Kennwort.
+                                {{ t('pages.hash.bcrypt.correct') }}
                             </p>
                             <p class="mb-0 " v-else-if="checkingState === 'wrong'">
                                 <i class="bx bx-error text-error me-2"></i>
-                                Der Hash passt nicht zu dem angegebenem Kennwort.
+                                {{ t('pages.hash.bcrypt.wrong') }}
                             </p>
                             <p class="mb-0 " v-else>
                                 <i class="bx bx-error text-error me-2"></i>
-                                Bitte auf "Prüfen" klicken, um den Hash zu überprüfen.
+                                {{ t('pages.hash.bcrypt.pleaseCheck') }}
                             </p>
                         </div>
                     </VCardText>
@@ -179,7 +185,7 @@ const checkHash = () => {
                         <div class="text-start">
                             <v-btn color="primary" @click="checkHash" role="button"
                                 :disabled="checkingState === 'loading'">
-                                Prüfen
+                                {{ t('pages.hash.bcrypt.checkButton') }}
                             </v-btn>
                         </div>
                     </VCardText>

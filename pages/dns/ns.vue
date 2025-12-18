@@ -1,9 +1,11 @@
 <script setup>
-useHead({
-    title: 'NS Resolver',
+const { t, locale } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.dns.ns.title'),
     meta: [
         {
-            description: 'Löst die MX-Records für eine Domain auf.',
+            description: t('pages.dns.ns.description'),
         },
     ],
 })
@@ -24,14 +26,14 @@ const isValidDomain = (domain) => {
 
 const doRequest = async () => {
     if (!domain.value) {
-        $toast.error('Bitte gebe eine Domain ein', {
+        $toast.error(t('pages.dns.ns.errors.noDomain'), {
             position: "bottom-center",
         })
         return;
     }
 
     if (!isValidDomain(domain.value)) {
-        $toast.error('Die Domain scheint nicht gültig zu sein.\nBitte versuche es erneut.', {
+        $toast.error(t('pages.dns.ns.errors.invalidDomain'), {
             position: "bottom-center",
         });
         return;
@@ -43,16 +45,16 @@ const doRequest = async () => {
         if (data) {
             response.value = data;
 
-            $toast.success('NS-Daten erfolgreich abgerufen', {
+            $toast.success(t('pages.dns.ns.errors.fetchSuccess'), {
                 position: "bottom-center",
             })
         } else {
-            $toast.error('Fehler beim Abrufen der NS-Daten', {
+            $toast.error(t('pages.dns.ns.errors.fetchError'), {
                 position: "bottom-center",
             })
         }
     } catch (e) {
-        $toast.error('Fehler beim Abrufen der NS-Daten\n' + e.message, {
+        $toast.error(t('pages.dns.ns.errors.fetchError') + '\n' + e.message, {
             position: "bottom-center",
         })
     } finally {
@@ -62,23 +64,19 @@ const doRequest = async () => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">NS Resolver</h2>
+        <h2 class="mb-2">{{ t('pages.dns.ns.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('pages.dns.ns.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kann ein NS-Record abgefragt werden. Das Tool löst diesen auf, und löst dann
-                        ebenfalls die dazu gehörigen Records (A und AAAA) auf.
+                        {{ t('pages.dns.ns.description1') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        NS-Records (Nameserver-Records) sind ein wichtiger Bestandteil des DNS-Systems (Domain Name
-                        System). Sie geben an, welche Nameserver für eine bestimmte Domain zuständig sind.
-                        Diese Nameserver sind dafür verantwortlich, Anfragen zu dieser Domain zu beantworten und
-                        die entsprechenden DNS-Einträge bereitzustellen.
+                        {{ t('pages.dns.ns.description2') }}
                     </div>
                 </div>
             </VCardItem>
@@ -86,43 +84,40 @@ const doRequest = async () => {
 
         <VCard>
             <VCardText>
-                <h3 class="mb-3">Domain</h3>
-                <p>Hier kannst du die Domain angeben, für die du die NS-Records auflösen möchtest.
-                    Bitte gebe hier nur die Domain ein, ohne Protokoll oder ähnlichem (z.B. <code>kup.tz</code>)</p>
+                <h3 class="mb-3">{{ t('pages.dns.ns.domain') }}</h3>
+                <p>{{ t('pages.dns.ns.domainDescription') }}</p>
                 <p>
-                    Die Verwendung dieses Tools <strong>verbraucht {{ get_tool_by_url('/dns/ns').tokens }} Token pro
-                        Abfrage</strong>. Bitte beachte, dass du nur eine begrenzte Anzahl an Token zur Verfügung hast.
+                    {{ t('pages.dns.ns.tokenUsage', { tokens: get_tool_by_url('/dns/ns', locale.value)?.tokens || 0 })
+                    }}
                 </p>
-                <VTextField v-model="domain" class="w-100" label="Domain" placeholder="example.com"
-                    :disabled="isLoading" />
+                <VTextField v-model="domain" class="w-100" :label="t('common.domain')"
+                    :placeholder="t('common.placeholder.domain')" :disabled="isLoading" />
                 <VBtn color="primary" class="mt-4" :loading="isLoading" @click="doRequest">
-                    Abfragen
+                    {{ t('pages.dns.ns.query') }}
                 </VBtn>
             </VCardText>
             <VCardText class="px-2">
                 <div v-if="isLoading" class="px-4">
-                    <h3 class="mb-3">NS Records</h3>
+                    <h3 class="mb-3">{{ t('pages.dns.ns.records') }}</h3>
 
                     <VProgressCircular indeterminate color="primary" class="me-1" />
-                    NS-Records werden abgerufen...
+                    {{ t('pages.dns.ns.loading') }}
                 </div>
                 <div v-else-if="response" class="text-h6 mb-1 px-4">
-                    <h3 class="mb-3">NS Records</h3>
+                    <h3 class="mb-3">{{ t('pages.dns.ns.records') }}</h3>
 
                     <VAlert v-if="response.suspectedIsp" type="info" border="start" color="green" outlined class="mb-3">
-                        <p class="mb-0">Der DNS-Anbieter für diese Domain ist vermutlich {{
-                            response.suspectedIsp.name }}.</p>
+                        <p class="mb-0">{{ t('pages.dns.ns.providerFound', { name: response.suspectedIsp.name }) }}</p>
                     </VAlert>
                     <VAlert v-else type="warning" border="start" color="red" outlined class="mb-3">
-                        <p class="mb-0">Der DNS-Anbieter für diese Domain konnte nicht automatisch festgestellt werden.
-                        </p>
+                        <p class="mb-0">{{ t('pages.dns.ns.providerNotFound') }}</p>
                     </VAlert>
 
                     <div>
                         <VDataTable :headers="[
-                            { title: 'Server', value: 'ns' },
-                            { title: 'IPv4', value: 'ip4' },
-                            { title: 'IPv6', value: 'ip6' }
+                            { title: t('pages.dns.ns.table.server'), value: 'ns' },
+                            { title: t('pages.dns.ns.table.ipv4'), value: 'ip4' },
+                            { title: t('pages.dns.ns.table.ipv6'), value: 'ip6' }
                         ]" :items="response.nsRecords" item-value="ns" class="elevation-1">
                             <template #item.ns="{ item }">
                                 <code>{{ item.ns }}</code>

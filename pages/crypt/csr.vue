@@ -1,9 +1,11 @@
 <script setup>
-useHead({
-    title: 'CSR Generator & Parser',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.crypt.csr.title'),
     meta: [
         {
-            description: 'Erstellt oder parst Certificate Signing Requests (CSR) im Browser.',
+            description: t('pages.crypt.csr.description'),
         },
     ],
 })
@@ -35,7 +37,7 @@ const isGenerating = ref(false);
 // Parse CSR
 const parseCsr = async () => {
     if (!csrInput.value.trim()) {
-        $toast.error('Bitte gebe ein CSR ein', {
+        $toast.error(t('common.errors.pleaseEnterCsr'), {
             position: "bottom-center",
         });
         return;
@@ -116,13 +118,13 @@ const parseCsr = async () => {
         generatedCsr.value = '';
         generatedPrivateKey.value = '';
 
-        $toast.success('CSR erfolgreich geparst und Formular ausgefüllt', {
+        $toast.success(t('pages.crypt.csr.parseSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
         console.error(error);
         parsedCsr.value = null;
-        $toast.error('Fehler beim Parsen des CSR: ' + error.message, {
+        $toast.error(t('pages.crypt.csr.parseError') + ': ' + error.message, {
             position: "bottom-center",
         });
     } finally {
@@ -133,7 +135,7 @@ const parseCsr = async () => {
 // Generate CSR
 const generateCsr = async () => {
     if (!csrForm.value.commonName.trim()) {
-        $toast.error('Common Name (CN) ist erforderlich', {
+        $toast.error(t('pages.crypt.csr.commonNameDesc'), {
             position: "bottom-center",
         });
         return;
@@ -158,7 +160,7 @@ const generateCsr = async () => {
                     publicKey: publicKey,
                 };
             } catch (error) {
-                $toast.error('Fehler beim Parsen des Private Keys: ' + error.message, {
+                $toast.error(t('pages.crypt.csr.parsePrivateKeyError') + ': ' + error.message, {
                     position: "bottom-center",
                 });
                 return;
@@ -239,12 +241,12 @@ const generateCsr = async () => {
             version: csr.version || 0,
         }, null, 2);
 
-        $toast.success('CSR erfolgreich generiert', {
+        $toast.success(t('pages.crypt.csr.generateSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
         console.error(error);
-        $toast.error('Fehler beim Generieren des CSR: ' + error.message, {
+        $toast.error(t('pages.crypt.csr.generateError') + ': ' + error.message, {
             position: "bottom-center",
         });
     } finally {
@@ -283,11 +285,11 @@ const clearGenerated = () => {
 const copyToClipboard = async (text) => {
     try {
         await navigator.clipboard.writeText(text);
-        $toast.success('In Zwischenablage kopiert', {
+        $toast.success(t('pages.crypt.csr.copySuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
-        $toast.error('Fehler beim Kopieren', {
+        $toast.error(t('pages.crypt.csr.copyError'), {
             position: "bottom-center",
         });
     }
@@ -308,12 +310,12 @@ const generateRsaKey = async (keySize) => {
         // Setze Private Key in Input-Feld
         privateKeyInput.value = privateKeyPem;
 
-        $toast.success(`RSA ${keySize} Bit Schlüssel erfolgreich generiert`, {
+        $toast.success(t('pages.crypt.csr.generateRsaSuccess', { size: keySize }), {
             position: "bottom-center",
         });
     } catch (error) {
         console.error(error);
-        $toast.error('Fehler beim Generieren des RSA Schlüssels: ' + error.message, {
+        $toast.error(t('pages.crypt.csr.generateRsaError') + ': ' + error.message, {
             position: "bottom-center",
         });
     } finally {
@@ -323,36 +325,29 @@ const generateRsaKey = async (keySize) => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">CSR Generator & Parser</h2>
+        <h2 class="mb-2">{{ t('pages.crypt.csr.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kannst du Certificate Signing Requests (CSR) erstellen oder bestehende
-                        CSRs parsen und analysieren. Das Tool zeigt dir zu dem CSR neben Informationen zum Antragsteller
-                        auch Informationen zum Public Key, sowie ggfs. Informationen zur Signatur.
+                        {{ t('pages.crypt.csr.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
                         <small>
-                            Wenn du ein neues CSR generieren möchtest, gebe den Private Key an (oder generiere einen)
-                            und fülle das Formular mit den Daten unten aus. Nach dem Klick auf "CSR erstellen" wird das
-                            CSR im
-                            PEM-Format angezeigt.
+                            {{ t('pages.crypt.csr.descriptionGenerate') }}
                         </small>
                     </div>
                     <div class="text-h6 mb-1">
                         <small>
-                            Wenn du ein bestehendes CSR parsen möchtest, kopiere es in das Textfeld oben und klick auf
-                            "CSR parsen". Zum Parsen eines CSRs wird der Private Key nicht benötigt.
+                            {{ t('pages.crypt.csr.descriptionParse') }}
                         </small>
                     </div>
                     <div class="text-h6 mb-1">
-                        <strong>Die Verarbeitung wird im Browser durchgeführt</strong>, es werden keine Daten an den
-                        Server übertragen.
+                        <strong>{{ t('pages.crypt.csr.descriptionPrivacy') }}</strong>
                     </div>
                 </div>
             </VCardItem>
@@ -363,40 +358,37 @@ const generateRsaKey = async (keySize) => {
             <VCardText class="p-2">
                 <VRow>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-0">CSR</h3>
-                        <small class="text-muted d-block mb-3">Zur Einreichung an eine CA, kann nach
-                            Zertifikatsausstellung gelsöcht werden</small>
+                        <h3 class="mb-0">{{ t('pages.crypt.csr.csr') }}</h3>
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.csrDesc') }}</small>
                         <textarea v-model="csrInput" class="w-100"
                             placeholder="-----BEGIN CERTIFICATE REQUEST-----&#10;...&#10;-----END CERTIFICATE REQUEST-----"
                             rows="8" :disabled="isParsing"></textarea>
-                        <small class="text-muted">Das CSR im PEM-Format</small>
+                        <small class="text-muted">{{ t('pages.crypt.csr.csrPlaceholder') }}</small>
                         <div class="mt-2">
                             <VBtn color="primary" @click="parseCsr" :disabled="isParsing || !csrInput.trim()"
                                 role="button" size="small">
                                 <i class='bx bx-search me-2'></i>
-                                CSR parsen
+                                {{ t('pages.crypt.csr.parse') }}
                             </VBtn>
                             <VBtn color="secondary" @click="clearParsed" :disabled="isParsing || !parsedCsr"
                                 role="button" class="ms-2" size="small">
                                 <i class='bx bx-trash me-2'></i>
-                                Zurücksetzen
+                                {{ t('pages.crypt.csr.reset') }}
                             </VBtn>
                         </div>
                     </VCol>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-0">RSA Private Key</h3>
-                        <small class="text-muted d-block mb-3">Sicher aufbewahren, <strong>erforderlich</strong> für die
-                            Verwendung des
-                            Zertifikats, welches die CA ausstellt.</small>
+                        <h3 class="mb-0">{{ t('pages.crypt.csr.rsaPrivateKey') }}</h3>
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.rsaPrivateKeyDesc') }}</small>
                         <textarea v-model="privateKeyInput" class="w-100"
                             placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----" rows="8"
                             :disabled="isGenerating"></textarea>
-                        <small class="text-muted d-block mb-2">Nur erforderlich, wenn CSR generiert wird</small>
+                        <small class="text-muted d-block mb-2">{{ t('pages.crypt.csr.rsaPrivateKeyNote') }}</small>
                         <v-menu>
                             <template v-slot:activator="{ props }">
                                 <VBtn color="primary" v-bind="props" :disabled="isGenerating" size="small">
                                     <i class='bx bx-key me-2'></i>
-                                    RSA Key generieren
+                                    {{ t('pages.crypt.csr.generateRsaKey') }}
                                 </VBtn>
                             </template>
                             <v-list>
@@ -419,72 +411,72 @@ const generateRsaKey = async (keySize) => {
         <!-- Zweite Reihe: Formularfelder links, CSR Rohformat rechts -->
         <VCard>
             <VCardTitle>
-                <h3 class="mb-3">CSR erstellen</h3>
+                <h3 class="mb-3">{{ t('pages.crypt.csr.createCsr') }}</h3>
             </VCardTitle>
             <VCardText class="p-2">
                 <VRow>
                     <!-- Links: Formularfelder -->
                     <VCol cols="12" md="6">
-                        <VTextField v-model="csrForm.commonName" label="Common Name (CN) *" placeholder="example.com"
+                        <VTextField v-model="csrForm.commonName" :label="t('pages.crypt.csr.commonName')"
+                            placeholder="example.com" :disabled="isGenerating" variant="outlined" />
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.commonNameDesc') }}</small>
+
+                        <VTextField v-model="csrForm.organization" :label="t('pages.crypt.csr.organization')"
+                            placeholder="Tino Kuptz" :disabled="isGenerating" variant="outlined" />
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.organizationDesc') }}</small>
+
+                        <VTextField v-model="csrForm.organizationalUnit"
+                            :label="t('pages.crypt.csr.organizationalUnit')" placeholder="SSL Management Division"
                             :disabled="isGenerating" variant="outlined" />
-                        <small class="text-muted d-block mb-3">Erforderlich: Domain-Name oder Hostname</small>
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.organizationalUnitDesc') }}</small>
 
-                        <VTextField v-model="csrForm.organization" label="Organization (O)" placeholder="Tino Kuptz"
-                            :disabled="isGenerating" variant="outlined" />
-                        <small class="text-muted d-block mb-3">Name des Unternehmens/der Organisation oder der
-                            Person</small>
+                        <VTextField v-model="csrForm.locality" :label="t('pages.crypt.csr.locality')"
+                            placeholder="Einfeld" :disabled="isGenerating" variant="outlined" />
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.localityDesc') }}</small>
 
-                        <VTextField v-model="csrForm.organizationalUnit" label="Organizational Unit (OU)"
-                            placeholder="SSL Management Division" :disabled="isGenerating" variant="outlined" />
-                        <small class="text-muted d-block mb-3">Organisationseinheit (z.B. Abteilung)</small>
+                        <VTextField v-model="csrForm.state" :label="t('pages.crypt.csr.state')"
+                            placeholder="Schleswig-Holstein" :disabled="isGenerating" variant="outlined" />
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.stateDesc') }}</small>
 
-                        <VTextField v-model="csrForm.locality" label="Locality (L)" placeholder="Einfeld"
-                            :disabled="isGenerating" variant="outlined" />
-                        <small class="text-muted d-block mb-3">Stadt oder Ort</small>
+                        <VTextField v-model="csrForm.country" :label="t('pages.crypt.csr.country')" placeholder="DE"
+                            maxlength="2" :disabled="isGenerating" variant="outlined" />
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.countryDesc') }}</small>
 
-                        <VTextField v-model="csrForm.state" label="State/Province (ST)" placeholder="Schleswig-Holstein"
-                            :disabled="isGenerating" variant="outlined" />
-                        <small class="text-muted d-block mb-3">Bundesland/Provinz</small>
-
-                        <VTextField v-model="csrForm.country" label="Country (C)" placeholder="DE" maxlength="2"
-                            :disabled="isGenerating" variant="outlined" />
-                        <small class="text-muted d-block mb-3">2-stelliger Ländercode (z.B. DE, US)</small>
-
-                        <VTextField v-model="csrForm.emailAddress" label="Email Address" placeholder="admin@kup.tz"
-                            type="email" :disabled="isGenerating" variant="outlined" />
-                        <small class="text-muted d-block mb-3">E-Mail-Adresse des Ansprechpartners</small>
+                        <VTextField v-model="csrForm.emailAddress" :label="t('pages.crypt.csr.emailAddress')"
+                            placeholder="admin@kup.tz" type="email" :disabled="isGenerating" variant="outlined" />
+                        <small class="text-muted d-block mb-3">{{ t('pages.crypt.csr.emailAddressDesc') }}</small>
 
                         <VBtn color="primary" @click="generateCsr"
                             :disabled="isGenerating || !csrForm.commonName.trim()" role="button" class="mt-2">
                             <i class='bx bx-file me-2'></i>
-                            CSR erstellen
+                            {{ t('pages.crypt.csr.generate') }}
                         </VBtn>
                         <VBtn color="secondary" @click="clearGenerated" :disabled="isGenerating || !generatedCsr"
                             role="button" class="ms-2 mt-2">
                             <i class='bx bx-trash me-2'></i>
-                            Zurücksetzen
+                            {{ t('pages.crypt.csr.reset') }}
                         </VBtn>
                     </VCol>
 
                     <!-- Rechts: CSR Rohformat -->
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">CSR Rohformat</h3>
+                        <h3 class="mb-3">{{ t('pages.crypt.csr.rawFormatTitle') }}</h3>
                         <div v-if="parsedCsrRaw">
                             <textarea v-model="parsedCsrRaw" class="w-100" rows="20" readonly></textarea>
                             <VBtn color="primary" @click="copyToClipboard(parsedCsrRaw)" class="mt-2" size="small">
                                 <i class='bx bx-copy me-2'></i>
-                                Rohformat kopieren
+                                {{ t('common.copy') }}
                             </VBtn>
                         </div>
                         <div v-else-if="generatedCsr">
                             <textarea v-model="generatedCsr" class="w-100" rows="20" readonly></textarea>
                             <VBtn color="primary" @click="copyToClipboard(generatedCsr)" class="mt-2" size="small">
                                 <i class='bx bx-copy me-2'></i>
-                                CSR kopieren
+                                {{ t('common.copy') }}
                             </VBtn>
                         </div>
                         <div v-else class="text-muted">
-                            <p>Hier wird das CSR im Rohformat angezeigt, nachdem es geparst oder generiert wurde.</p>
+                            <p>{{ t('pages.crypt.csr.rawFormat') }}</p>
                         </div>
                     </VCol>
                 </VRow>

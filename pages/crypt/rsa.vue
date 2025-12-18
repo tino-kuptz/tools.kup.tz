@@ -1,9 +1,11 @@
 <script setup>
-useHead({
-    title: 'RSA Crypt online',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.crypt.rsa.title'),
     meta: [
         {
-            description: 'Schnell mal Daten mit RSA ver- und entschlüsseln.',
+            description: t('pages.crypt.rsa.description'),
         },
     ],
 })
@@ -69,11 +71,11 @@ const generateKeys = async () => {
         rsaPublicKey.value = toPemFormat(publicKeyBase64, '-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----');
         rsaPrivateKey.value = toPemFormat(privateKeyBase64, '-----BEGIN PRIVATE KEY-----', '-----END PRIVATE KEY-----');
 
-        $toast.success('Schlüssel erfolgreich generiert', {
+        $toast.success(t('pages.crypt.rsa.generateSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
-        $toast.error('Fehler beim Generieren der Schlüssel', {
+        $toast.error(t('pages.crypt.rsa.generateError'), {
             position: "bottom-center",
         });
     } finally {
@@ -108,12 +110,12 @@ const encryptUsingPublicKey = async () => {
 
         encryptedText.value = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
 
-        $toast.success('Verschlüsselung erfolgreich', {
+        $toast.success(t('pages.crypt.rsa.encryptSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
         console.error(error);
-        $toast.error('Fehler beim Verschlüsseln', {
+        $toast.error(t('pages.crypt.rsa.encryptError'), {
             position: "bottom-center",
         });
     } finally {
@@ -147,11 +149,11 @@ const decryptUsingPrivateKey = async () => {
 
         decryptedText.value = new TextDecoder().decode(decryptedData);
 
-        $toast.success('Entschlüsseln erfolgreich', {
+        $toast.success(t('pages.crypt.rsa.decryptSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
-        $toast.error('Fehler beim Entschlüsseln', {
+        $toast.error(t('pages.crypt.rsa.decryptError'), {
             position: "bottom-center",
         });
     } finally {
@@ -161,24 +163,22 @@ const decryptUsingPrivateKey = async () => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">RSA Keygen + Ver-/Entschlüsselung</h2>
+        <h2 class="mb-2">{{ t('pages.crypt.rsa.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool können Online Daten via RSA ver- und entschlüsselt werden.
+                        {{ t('pages.crypt.rsa.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Die Verschlüsselung wird im Browser durchgeführt, der eingegebene Text oder die ausgewählte
-                        Datei wird nicht
-                        via Netzwerk an andere Geräte übertragen.
+                        {{ t('pages.crypt.rsa.descriptionPrivacy') }}
                     </div>
                     <div class="text-h6 mb-1 text-muted">
-                        Genutzt wird RSA-OAEP mit SHA-256er Hash, generiert werden {{ rsaKeySize }}er Schlüssel.
+                        {{ t('pages.crypt.rsa.descriptionNote', { size: rsaKeySize }) }}
                     </div>
                 </div>
             </VCardItem>
@@ -188,49 +188,46 @@ const decryptUsingPrivateKey = async () => {
             <VCardText class="p-2">
                 <VRow>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">Öffentlicher Schlüssel</h3>
+                        <h3 class="mb-3">{{ t('pages.crypt.rsa.publicKey') }}</h3>
                         <textarea v-model="rsaPublicKey" class="w-100"
                             placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----" rows="8"
                             :disabled="isWorking"></textarea>
-                        <small class="text-muted">PEM-Format</small>
+                        <small class="text-muted">{{ t('pages.crypt.rsa.pemFormat') }}</small>
                     </VCol>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">Privater Schlüssel</h3>
+                        <h3 class="mb-3">{{ t('pages.crypt.rsa.privateKey') }}</h3>
                         <textarea v-model="rsaPrivateKey" class="w-100"
                             placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----" rows="8"
                             :disabled="isWorking"></textarea>
-                        <small class="text-muted">PEM-Format</small>
+                        <small class="text-muted">{{ t('pages.crypt.rsa.pemFormat') }}</small>
                     </VCol>
                     <VCol cols="12" class="d-flex align-left align-center">
                         <div style="width: 210px; display: inline-block; vertical-align: middle;" class="me-3">
-                            <VSelect v-model="rsaKeySize" :items="rsaKeySizes" label="Schlüsselgröße" density="compact"
-                                hide-details style="min-width: 0;" />
+                            <VSelect v-model="rsaKeySize" :items="rsaKeySizes" :label="t('pages.crypt.rsa.keySize')"
+                                density="compact" hide-details style="min-width: 0;" />
                         </div>
 
                         <VBtn color="primary" @click="generateKeys" :disabled="isWorking" role="button">
                             <i class='bx bx-key me-2'></i>
-                            Schlüssel generieren
+                            {{ t('pages.crypt.rsa.generateKeys') }}
                         </VBtn>
                     </VCol>
                 </VRow>
                 <VRow>
                     <VCol cols="12">
                         <h3 class="mb-3">Plaintext</h3>
-                        <textarea v-model="decryptedText" class="w-100"
-                            placeholder="Text, der verschlüsselt werden soll" rows="5" :disabled="isWorking"></textarea>
+                        <textarea v-model="decryptedText" class="w-100" rows="5" :disabled="isWorking"></textarea>
                         <VBtn color="primary" @click="encryptUsingPublicKey" :disabled="isWorking" role="button"
                             class="mt-2">
-                            Verschlüsseln
+                            {{ t('pages.crypt.rsa.encrypt') }}
                         </VBtn>
                     </VCol>
                     <VCol cols="12">
-                        <h3 class="mb-3">Verschlüsselter Text</h3>
-                        <textarea v-model="encryptedText" class="w-100"
-                            placeholder="Text, der verschlüsselt ist und entschlüsselt werden soll" rows="5"
-                            :disabled="isWorking"></textarea>
+                        <h3 class="mb-3">{{ t('pages.crypt.rsa.encryptedText') }}</h3>
+                        <textarea v-model="encryptedText" class="w-100" rows="5" :disabled="isWorking"></textarea>
                         <VBtn color="primary" @click="decryptUsingPrivateKey" :disabled="isWorking" role="button"
                             class="mt-2">
-                            Entschlüsseln
+                            {{ t('pages.crypt.rsa.decrypt') }}
                         </VBtn>
                     </VCol>
                 </VRow>

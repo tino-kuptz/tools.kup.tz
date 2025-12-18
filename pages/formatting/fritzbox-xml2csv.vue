@@ -1,11 +1,13 @@
 <script setup>
 import { fritzbox_xml2csv } from '~/utils/fritzbox-xml2csv.js';
 
-useHead({
-    title: 'FRITZ!Box xml2csv Konverter',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.formatting.fritzboxXml2csv.title'),
     meta: [
         {
-            description: 'Ein Adressbuch aus der FRITZ!Box im XML-Format zu einer CSV umwandeln.',
+            description: t('pages.formatting.fritzboxXml2csv.description'),
         },
     ],
 })
@@ -43,7 +45,7 @@ const convert = async () => {
         targetCsv.value = await fritzbox_xml2csv(sourceXml.value, seperator.value, formatNumbers.value);
     } catch (error) {
         targetCsv.value = '';
-        $toast.error('Fehler beim Konvertieren zu CSV:\n' + error.message, {
+        $toast.error(t('pages.formatting.fritzboxXml2csv.convertError') + ':\n' + error.message, {
             position: "bottom-center",
         });
     } finally {
@@ -62,20 +64,19 @@ function downloadAsFile() {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">FRITZ!Box xml2csv</h2>
+        <h2 class="mb-2">{{ t('pages.formatting.fritzboxXml2csv.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Dieses Tool wandelt ein Adressbuch aus der FRITZ!Box im XML-Format in eine CSV-Datei um.
+                        {{ t('pages.formatting.fritzboxXml2csv.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Die Konvertierung wird im Browser durchgeführt, der eingegebene Text oder die ausgewählte
-                        Datei wird nicht via Netzwerk an andere Geräte übertragen.
+                        {{ t('pages.formatting.fritzboxXml2csv.descriptionPrivacy') }}
                     </div>
                 </div>
             </VCardItem>
@@ -86,51 +87,54 @@ function downloadAsFile() {
                 <VRow>
                     <VCol cols="12" xl="6">
                         <div class="d-flex mb-3">
-                            <h3 class="mb-0 flex-fill">Quell-XML
+                            <h3 class="mb-0 flex-fill">{{ t('pages.formatting.fritzboxXml2csv.sourceXml') }}
                             </h3>
                             <!-- Damit die einheitlich sind: -->
                             <VSelect style="opacity: 0; pointer-events: none;" />
                         </div>
                         <textarea v-model="sourceXml" class="w-100"
-                            placeholder="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&lt;phonebooks&gt;&lt;phonebook&gt;...&lt;/phonebook&gt;&lt;/phonebooks&gt;"
-                            rows="5" :disabled="isWorking"></textarea>
+                            :placeholder="t('pages.formatting.fritzboxXml2csv.sourcePlaceholder')" rows="5"
+                            :disabled="isWorking"></textarea>
                     </VCol>
                     <VCol cols="12" xl="6">
                         <div class="d-flex mb-3">
-                            <h3 class="mb-0 flex-fill">Konvertiert</h3>
-                            <VSelect v-model="seperator" :items="[';', ',', '\\t']" label="Ziel-Trennzeichen"
-                                :disabled="isWorking" />
+                            <h3 class="mb-0 flex-fill">{{ t('pages.formatting.fritzboxXml2csv.targetCsv') }}</h3>
+                            <VSelect v-model="seperator" :items="[';', ',', '\\t']"
+                                :label="t('pages.formatting.fritzboxXml2csv.targetSeparator')" :disabled="isWorking" />
                         </div>
-                        <textarea v-model="targetCsv" class="w-100" placeholder="1;2;3;4;5" rows="5"
+                        <textarea v-model="targetCsv" class="w-100"
+                            :placeholder="t('pages.formatting.fritzboxXml2csv.targetPlaceholder')" rows="5"
                             :disabled="true"></textarea>
                         <div class="d-flex justify-end mt-2">
                             <VBtn color="primary" :disabled="!targetCsv || isWorking" @click="downloadAsFile">
-                                <span class="v-btn__content">Herunterladen</span>
+                                <span class="v-btn__content">{{ t('pages.formatting.fritzboxXml2csv.download') }}</span>
                             </VBtn>
                         </div>
                     </VCol>
                     <VCol cols="12">
                         <div class="d-flex mb-3">
-                            <h3 class="mb-0 flex-fill">Formatierung</h3>
+                            <h3 class="mb-0 flex-fill">{{ t('pages.formatting.fritzboxXml2csv.formatting') }}</h3>
                         </div>
-                        <VCheckbox v-model="formatNumbers.do" label="Telefonnummern formatieren"
-                            :disabled="isWorking" />
-                        <small class="text-muted">Rufnummern werden in ein internationales Format umgewandelt</small>
-                        <VCheckbox v-model="formatNumbers.doAdvanced" label="Erweitertes Matching aktivieren"
+                        <VCheckbox v-model="formatNumbers.do"
+                            :label="t('pages.formatting.fritzboxXml2csv.formatNumbers')" :disabled="isWorking" />
+                        <small class="text-muted">{{ t('pages.formatting.fritzboxXml2csv.formatNumbersDesc') }}</small>
+                        <VCheckbox v-model="formatNumbers.doAdvanced"
+                            :label="t('pages.formatting.fritzboxXml2csv.advancedMatching')"
                             :disabled="!formatNumbers.do || isWorking" />
-                        <small class="text-muted">Bei Telefonnummer ohne "0" am Anfang wird die Ortsvorwahl gepräfixt,
-                            bevor sie
-                            geparst wird</small>
+                        <small class="text-muted">{{ t('pages.formatting.fritzboxXml2csv.advancedMatchingDesc')
+                            }}</small>
                     </VCol>
                     <VCol cols="12" xl="6" class="mb-2">
-                        <VTextField v-model="formatNumbers.countryPrefix" label="Ländervorwahl"
+                        <VTextField v-model="formatNumbers.countryPrefix"
+                            :label="t('pages.formatting.fritzboxXml2csv.countryPrefix')"
                             :disabled="!formatNumbers.do || isWorking" />
-                        <small>Zweibuchstabencode für das Standard-Land; bspw. <code>DE</code> = Deutschland</small>
+                        <small v-html="t('pages.formatting.fritzboxXml2csv.countryPrefixDesc')"></small>
                     </VCol>
                     <VCol cols="12" xl="6" class="mb-2">
-                        <VTextField v-model="formatNumbers.areaCode" label="Ortsvorwahl"
+                        <VTextField v-model="formatNumbers.areaCode"
+                            :label="t('pages.formatting.fritzboxXml2csv.areaCode')"
                             :disabled="!formatNumbers.do || isWorking" />
-                        <small>Mit "0" vorweg; bspw. <code>04321</code> = Neumünster</small>
+                        <small v-html="t('pages.formatting.fritzboxXml2csv.areaCodeDesc')"></small>
                     </VCol>
                 </VRow>
             </VCardText>

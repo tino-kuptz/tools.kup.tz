@@ -1,5 +1,8 @@
 <script setup>
+const { t, locale } = useI18n();
 const tokenStore = useTokenStore();
+
+const prefix = computed(() => locale.value === 'de' ? '' : '/en');
 
 const getUsagedPercentage = () => {
     const total = tokenStore.token && tokenStore.token.limit ? tokenStore.token.limit : 1;
@@ -40,18 +43,19 @@ const togglePopup = () => {
     </IconBtn>
     <div class="popup" v-if="popupVisible" :style="popupOffset">
         <p>
-            <strong>Tokenverbrauch</strong>
+            <strong>{{ t('components.tokenUsage.title') }}</strong>
         </p>
         <p>
-            <strong>Tokens benutzt</strong><br>
-            {{ tokenStore.token && tokenStore.token.used ? tokenStore.token.used : 0 }} von
+            <strong>{{ t('components.tokenUsage.used') }}</strong><br>
+            {{ tokenStore.token && tokenStore.token.used ? tokenStore.token.used : 0 }} {{ t('components.tokenUsage.of')
+            }}
             {{ tokenStore.token && tokenStore.token.limit ? tokenStore.token.limit : 0 }}
         </p>
         <p>
-            <strong>Tokens verfügbar</strong><br>
+            <strong>{{ t('components.tokenUsage.available') }}</strong><br>
             {{ tokenStore.token && tokenStore.token.remaining ? tokenStore.token.remaining : 0 }}
         </p>
-        <RouterLink to="/about">Erklärung zu Tokens</RouterLink>
+        <RouterLink :to="`${prefix}/about`">{{ t('components.tokenUsage.explanation') }}</RouterLink>
     </div>
 </template>
 <style scoped>

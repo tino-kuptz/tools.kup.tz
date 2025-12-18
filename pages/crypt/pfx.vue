@@ -1,9 +1,11 @@
 <script setup>
-useHead({
-    title: 'PFX/PKCS#12 Generator',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.crypt.pfx.title'),
     meta: [
         {
-            description: 'Erstellt ein PFX/PKCS#12 Zertifikat aus Private Key, Certificate und optionaler CA-Chain.',
+            description: t('pages.crypt.pfx.description'),
         },
     ],
 })
@@ -20,14 +22,14 @@ const showPasswordWarning = ref(false);
 const createPfx = async () => {
     // Validierung
     if (!privateKey.value.trim()) {
-        $toast.error('Private Key ist erforderlich', {
+        $toast.error(t('common.errors.pleaseEnter', { field: t('pages.crypt.pfx.privateKey') }), {
             position: "bottom-center",
         });
         return;
     }
 
     if (!certificate.value.trim()) {
-        $toast.error('Certificate ist erforderlich', {
+        $toast.error(t('common.errors.pleaseEnter', { field: t('pages.crypt.pfx.certificate') }), {
             position: "bottom-center",
         });
         return;
@@ -56,7 +58,7 @@ const doCreatePfx = async () => {
         try {
             privateKeyObj = forge.default.pki.privateKeyFromPem(privateKey.value);
         } catch (error) {
-            $toast.error('Fehler beim Parsen des Private Keys: ' + error.message, {
+            $toast.error(t('pages.crypt.pfx.parsePrivateKeyError') + ': ' + error.message, {
                 position: "bottom-center",
             });
             return;
@@ -67,7 +69,7 @@ const doCreatePfx = async () => {
         try {
             certObj = forge.default.pki.certificateFromPem(certificate.value);
         } catch (error) {
-            $toast.error('Fehler beim Parsen des Certificates: ' + error.message, {
+            $toast.error(t('pages.crypt.pfx.parseCertificateError') + ': ' + error.message, {
                 position: "bottom-center",
             });
             return;
@@ -88,7 +90,7 @@ const doCreatePfx = async () => {
                             const caCert = forge.default.pki.certificateFromPem(match);
                             caCerts.push(caCert);
                         } catch (error) {
-                            console.warn('Fehler beim Parsen eines CA-Zertifikats:', error);
+                            console.warn(t('pages.crypt.pfx.parseCaError'), error);
                         }
                     }
                 } else {
@@ -97,7 +99,7 @@ const doCreatePfx = async () => {
                     caCerts.push(caCert);
                 }
             } catch (error) {
-                $toast.error('Fehler beim Parsen der CA-Chain: ' + error.message, {
+                $toast.error(t('pages.crypt.pfx.parseCaChainError') + ': ' + error.message, {
                     position: "bottom-center",
                 });
                 return;
@@ -117,12 +119,12 @@ const doCreatePfx = async () => {
         // Download vorbereiten
         downloadPfx(p12Der);
 
-        $toast.success('PFX-File erfolgreich erstellt', {
+        $toast.success(t('pages.crypt.pfx.createSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
         console.error(error);
-        $toast.error('Fehler beim Erstellen des PFX-Files: ' + error.message, {
+        $toast.error(t('pages.crypt.pfx.createError') + ': ' + error.message, {
             position: "bottom-center",
         });
     } finally {
@@ -166,25 +168,19 @@ const clearAll = () => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">PFX/PKCS#12 Generator</h2>
+        <h2 class="mb-2">{{ t('pages.crypt.pfx.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kannst du ein PFX/PKCS#12 Zertifikat aus einem Private Key, einem Certificate
-                        und optional einer CA-Chain erstellen.
+                        {{ t('pages.crypt.pfx.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Die Konvertierung wird im Browser durchgeführt, die eingegebenen Daten werden nicht via
-                        Netzwerk an andere Geräte übertragen.
-                    </div>
-                    <div class="text-h6 mb-1 text-muted">
-                        Das erstellte PFX-File kann mit einem optionalen Passwort geschützt werden. Dazu rate ich auch,
-                        einige Anwendungen schlucken das PFX-File sonst nicht.
+                        {{ t('common.privacy.notTransmitted') }}
                     </div>
                 </div>
             </VCardItem>
@@ -194,42 +190,41 @@ const clearAll = () => {
             <VCardText class="p-2">
                 <VRow>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">Private Key</h3>
+                        <h3 class="mb-3">{{ t('pages.crypt.pfx.privateKey') }}</h3>
                         <textarea v-model="privateKey" class="w-100"
                             placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----" rows="8"
                             :disabled="isWorking"></textarea>
-                        <small class="text-muted">Der Private Key im PEM-Format</small>
+                        <small class="text-muted">{{ t('pages.crypt.pfx.privateKeyDesc') }}</small>
                     </VCol>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">Certificate</h3>
+                        <h3 class="mb-3">{{ t('pages.crypt.pfx.certificate') }}</h3>
                         <textarea v-model="certificate" class="w-100"
                             placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----" rows="8"
                             :disabled="isWorking"></textarea>
-                        <small class="text-muted">Das Zertifikat im PEM-Format</small>
+                        <small class="text-muted">{{ t('pages.crypt.pfx.certificateDesc') }}</small>
                     </VCol>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">CA-Chain (optional)</h3>
+                        <h3 class="mb-3">{{ t('pages.crypt.pfx.caChain') }}</h3>
                         <textarea v-model="caChain" class="w-100"
                             placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----&#10;-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
                             rows="8" :disabled="isWorking"></textarea>
-                        <small class="text-muted">Die CA-Chain im PEM-Format (kann mehrere Zertifikate
-                            enthalten)</small>
+                        <small class="text-muted">{{ t('pages.crypt.pfx.caChainDesc') }}</small>
                     </VCol>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">Optionen</h3>
-                        <VTextField v-model="pfxPassword" label="PFX-Passwort (optional)" type="password"
-                            placeholder="Leer lassen für kein Passwort" :disabled="isWorking" />
-                        <small class="text-muted">Passwort zum Schutz des PFX-Files (optional)</small>
+                        <h3 class="mb-3">{{ t('pages.crypt.pfx.options') }}</h3>
+                        <VTextField v-model="pfxPassword" :label="t('pages.crypt.pfx.password')" type="password"
+                            :placeholder="t('pages.crypt.pfx.passwordPlaceholder')" :disabled="isWorking" />
+                        <small class="text-muted">{{ t('pages.crypt.pfx.passwordDesc') }}</small>
                     </VCol>
                     <VCol cols="12">
                         <VBtn color="primary" @click="createPfx"
                             :disabled="isWorking || !privateKey.trim() || !certificate.trim()" role="button">
                             <i class='bx bx-file me-2'></i>
-                            PFX-File erstellen
+                            {{ t('pages.crypt.pfx.create') }}
                         </VBtn>
                         <VBtn color="secondary" @click="clearAll" :disabled="isWorking" role="button" class="ms-2">
                             <i class='bx bx-trash me-2'></i>
-                            Alles löschen
+                            {{ t('pages.crypt.pfx.clearAll') }}
                         </VBtn>
                     </VCol>
                 </VRow>
@@ -244,28 +239,23 @@ const clearAll = () => {
             <VCard>
                 <VCardTitle class="d-flex align-center mt-4">
                     <VIcon icon="bx-error-circle" color="warning" class="me-2" />
-                    <span>Kein Passwort eingegeben</span>
+                    <span>{{ t('pages.crypt.pfx.noPasswordTitle') }}</span>
                 </VCardTitle>
                 <VCardText>
                     <p class="mb-3">
-                        Du hast kein Kennwort für das PFX-File eingegeben. Das PFX-File wird ohne Passwort erstellt.
-                        Wenn die Anwendung, in der du das PFX-File importieren möchtest, dennoch eines erfragt, versuche
-                        es mit einem leeren Kennwort.
+                        {{ t('pages.crypt.pfx.noPasswordMessage') }}
                     </p>
                     <p class="mb-3">
-                        <strong>Hinweis:</strong> Einige Anwendungen unterstützen keine PFX-Files ohne Passwort oder
-                        erlauben keine Angabe eines leeren Kennwortes. <strong>PFX ohne Kennwort kann Probleme
-                            machen</strong>, wenn du die Datei "sowieso sicher aufbewahrst",
-                        benutze doch einfach <code>abc123</code> als Kennwort.
+                        <strong>{{ t('common.note') }}:</strong> {{ t('pages.crypt.pfx.noPasswordNote') }}
                     </p>
                 </VCardText>
                 <VCardActions>
                     <VSpacer></VSpacer>
                     <VBtn color="secondary" @click="cancelPfxCreation" :disabled="isWorking">
-                        Abbrechen
+                        {{ t('pages.crypt.pfx.cancel') }}
                     </VBtn>
                     <VBtn color="primary" @click="doCreatePfx" :disabled="isWorking">
-                        Trotzdem erstellen
+                        {{ t('pages.crypt.pfx.createAnyway') }}
                     </VBtn>
                 </VCardActions>
             </VCard>

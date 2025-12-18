@@ -1,26 +1,27 @@
 <script setup>
+const { t } = useI18n();
 
-useHead({
-    title: 'Bilder zu Base64',
+useCustomI18nHead({
+    title: t('pages.formatting.imageBase64.title'),
     meta: [
         {
-            description: 'Konvertieren eines Bildes zu einem Base64 Bild.',
+            description: t('pages.formatting.imageBase64.description'),
         },
     ],
 })
 
 const outputImages = ref([]);
 
-const elementTemplates = [
+const elementTemplates = computed(() => [
     {
-        name: 'Bild',
+        name: t('pages.formatting.imageBase64.templateImage'),
         content: '<img alt="xxx" src="$REPLACE%" />',
     },
     {
-        name: 'CSS',
+        name: t('pages.formatting.imageBase64.templateCss'),
         content: 'background-image: url("$REPLACE%");',
     },
-]
+])
 
 
 const onFileChange = (event) => {
@@ -47,11 +48,11 @@ const onFileChange = (event) => {
 const { $toast } = useNuxtApp()
 const copyToClipboard = (str) => {
     navigator.clipboard.writeText(str).then(() => {
-        $toast.success('Wurde in die Zwischenablage kopiert', {
+        $toast.success(t('pages.formatting.imageBase64.copySuccess'), {
             position: "bottom-center",
         })
     }).catch(err => {
-        $toast.error('Fehler beim Kopieren:\n' + err.message, {
+        $toast.error(t('pages.formatting.imageBase64.copyError') + ':\n' + err.message, {
             position: "bottom-center",
         });
     });
@@ -59,22 +60,19 @@ const copyToClipboard = (str) => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">Bilder zu Base64</h2>
+        <h2 class="mb-2">{{ t('pages.formatting.imageBase64.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool können Bilder schnell ins Base64 Format umgewandelt werden. Dies ist nützlich,
-                        um
-                        Bilder in HTML oder CSS einzubetten, ohne sie extern zu hosten.
+                        {{ t('pages.formatting.imageBase64.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Die Konvertierung wird im Browser durchgeführt, sodass keine Daten an einen Server gesendet
-                        werden.
+                        {{ t('pages.formatting.imageBase64.descriptionPrivacy') }}
                     </div>
                 </div>
             </VCardItem>
@@ -82,17 +80,17 @@ const copyToClipboard = (str) => {
 
         <VCard>
             <VCardItem>
-                <h3 class="mb-3">Datei</h3>
+                <h3 class="mb-3">{{ t('pages.formatting.imageBase64.file') }}</h3>
                 <input type="file" @change="onFileChange" class="w-100" />
 
-                <h3 class="mt-3" v-if="outputImages.length > 0">Ergebnisse</h3>
+                <h3 class="mt-3" v-if="outputImages.length > 0">{{ t('pages.formatting.imageBase64.results') }}</h3>
 
                 <div class="mt-2" v-for="(image, index) in outputImages" :key="index">
                     <h4 class="mb-2">{{ image.name }}</h4>
 
                     <VRow>
                         <VCol cols="12" md="3" class="uploaded-image d-none d-md-block text-center">
-                            <img alt="Hochgeladenes Bild" :src="image.base64" />
+                            <img :alt="t('pages.formatting.imageBase64.uploadedImage')" :src="image.base64" />
                         </VCol>
                         <VCol cols="12" md="9">
                             <div v-for="(template, index) in elementTemplates" :key="index">
@@ -101,7 +99,7 @@ const copyToClipboard = (str) => {
                                     style="overflow-x: scroll;">{{ template.content.replace('$REPLACE%', image.base64) }}</pre>
                                 <VBtn @click="copyToClipboard(template.content.replace('$REPLACE%', image.base64))"
                                     color="primary" size="x-small" class="mb-2">
-                                    <i class="bx bx-copy me-2"></i> Zwischenablage
+                                    <i class="bx bx-copy me-2"></i> {{ t('pages.formatting.imageBase64.clipboard') }}
                                 </VBtn>
                             </div>
                         </VCol>

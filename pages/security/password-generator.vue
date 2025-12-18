@@ -1,12 +1,14 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useTheme } from 'vuetify'
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { useTheme } from 'vuetify';
 
-useHead({
-    title: 'Kennwort Generator',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.security.passwordGenerator.title'),
     meta: [
         {
-            description: 'Erstellt sichere Kennwörter basierend auf benutzerdefinierten Vorlagen.',
+            description: t('pages.security.passwordGenerator.description'),
         },
     ],
 })
@@ -175,11 +177,14 @@ const generateSinglePassword = () => {
 const generatePasswords = async () => {
     if (!validateTemplate.value.isValid) {
         if (validateTemplate.value.allowedCategories === 0) {
-            $toast.error('Mindestens eine Zeichenkategorie muss erlaubt sein.', {
+            $toast.error(t('pages.security.passwordGenerator.atLeastOneCategory'), {
                 position: "bottom-center",
             })
         } else {
-            $toast.error(`${validateTemplate.value.requiredCategories} Kategorien sind erforderlich, aber das Kennwort hat nur ${validateTemplate.value.availableLength} Zeichen.`, {
+            $toast.error(t('pages.security.passwordGenerator.validationError', {
+                required: validateTemplate.value.requiredCategories,
+                available: validateTemplate.value.availableLength
+            }), {
                 position: "bottom-center",
             })
         }
@@ -233,11 +238,11 @@ watch(currentTemplate, () => {
 const copyPassword = async (password) => {
     try {
         await navigator.clipboard.writeText(password)
-        $toast.success('Kennwort wurde in die Zwischenablage kopiert', {
+        $toast.success(t('pages.security.passwordGenerator.copySuccess'), {
             position: "bottom-center",
         })
     } catch (err) {
-        $toast.error('Fehler beim Kopieren des Kennworts: ' + err.message, {
+        $toast.error(t('pages.security.passwordGenerator.copyError') + ': ' + err.message, {
             position: "bottom-center",
         })
     }
@@ -261,20 +266,19 @@ const getCharColor = (char) => {
 
 <template>
     <div>
-        <h1 class="mb-4">Kennwort-Generator</h1>
+        <h1 class="mb-4">{{ t('pages.security.passwordGenerator.heading') }}</h1>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Das Tool kann genutzt werden, um Kennwörter zu generieren. Die Kennwörter werden im Browser
-                        generiert, zur Generierung wird WebCrypto genutzt.
+                        {{ t('pages.security.passwordGenerator.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Die Kennwörter werden nicht an den Server übermittelt oder auf diesem gespeichert.
+                        {{ t('pages.security.passwordGenerator.descriptionPrivacy') }}
                     </div>
                 </div>
             </VCardItem>
@@ -284,50 +288,54 @@ const getCharColor = (char) => {
             <VCardText>
                 <VRow>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-4">Vorlage bearbeiten</h3>
+                        <h3 class="mb-4">{{ t('pages.security.passwordGenerator.editTemplate') }}</h3>
 
                         <VSwitch v-model="currentTemplate.avoidSimilarChars"
-                            label="Ähnliche Zeichen vermeiden (l/1, O/0, etc.)" class="mb-4" />
+                            :label="t('pages.security.passwordGenerator.avoidSimilar')" class="mb-4" />
 
-                        <VSlider v-model="currentTemplate.length" :label="`Länge (${currentTemplate.length} Zeichen)`"
+                        <VSlider v-model="currentTemplate.length"
+                            :label="`${t('pages.security.passwordGenerator.length')} (${currentTemplate.length} ${t('pages.security.passwordGenerator.characters')})`"
                             :min="4" :max="64" :step="1" show-ticks class="mb-4" />
 
                         <VSlider v-model="currentTemplate.passwordCount"
-                            :label="`Anzahl Kennwörter (${currentTemplate.passwordCount})`" :min="1" :max="10" :step="1"
-                            show-ticks class="mb-4" />
+                            :label="`${t('pages.security.passwordGenerator.passwordCount')} (${currentTemplate.passwordCount})`"
+                            :min="1" :max="10" :step="1" show-ticks class="mb-4" />
 
-                        <h4 class="mb-2">Zeichenkategorien</h4>
+                        <h4 class="mb-2">{{ t('pages.security.passwordGenerator.categories') }}</h4>
 
-                        <VSelect v-model="currentTemplate.numbers" label="Zahlen" :items="[
-                            { title: 'Erzwingen', value: 'require' },
-                            { title: 'Erlauben, aber nicht erzwingen', value: 'allow' },
-                            { title: 'Nicht erlauben', value: 'forbid' }
-                        ]" variant="outlined" class="mb-3" />
+                        <VSelect v-model="currentTemplate.numbers"
+                            :label="t('pages.security.passwordGenerator.numbers')" :items="[
+                                { title: t('pages.security.passwordGenerator.require'), value: 'require' },
+                                { title: t('pages.security.passwordGenerator.allow'), value: 'allow' },
+                                { title: t('pages.security.passwordGenerator.forbid'), value: 'forbid' }
+                            ]" variant="outlined" class="mb-3" />
 
-                        <VSelect v-model="currentTemplate.lowercase" label="Kleine Buchstaben" :items="[
-                            { title: 'Erzwingen', value: 'require' },
-                            { title: 'Erlauben, aber nicht erzwingen', value: 'allow' },
-                            { title: 'Nicht erlauben', value: 'forbid' }
-                        ]" variant="outlined" class="mb-3" />
+                        <VSelect v-model="currentTemplate.lowercase"
+                            :label="t('pages.security.passwordGenerator.lowercase')" :items="[
+                                { title: t('pages.security.passwordGenerator.require'), value: 'require' },
+                                { title: t('pages.security.passwordGenerator.allow'), value: 'allow' },
+                                { title: t('pages.security.passwordGenerator.forbid'), value: 'forbid' }
+                            ]" variant="outlined" class="mb-3" />
 
-                        <VSelect v-model="currentTemplate.uppercase" label="Große Buchstaben" :items="[
-                            { title: 'Erzwingen', value: 'require' },
-                            { title: 'Erlauben, aber nicht erzwingen', value: 'allow' },
-                            { title: 'Nicht erlauben', value: 'forbid' }
-                        ]" variant="outlined" class="mb-3" />
+                        <VSelect v-model="currentTemplate.uppercase"
+                            :label="t('pages.security.passwordGenerator.uppercase')" :items="[
+                                { title: t('pages.security.passwordGenerator.require'), value: 'require' },
+                                { title: t('pages.security.passwordGenerator.allow'), value: 'allow' },
+                                { title: t('pages.security.passwordGenerator.forbid'), value: 'forbid' }
+                            ]" variant="outlined" class="mb-3" />
 
                         <VSelect v-model="currentTemplate.normalSpecial"
-                            label="Normale Sonderzeichen (-/:()&amp;&quot;.?!)" :items="[
-                                { title: 'Erzwingen', value: 'require' },
-                                { title: 'Erlauben, aber nicht erzwingen', value: 'allow' },
-                                { title: 'Nicht erlauben', value: 'forbid' }
+                            :label="t('pages.security.passwordGenerator.normalSpecial')" :items="[
+                                { title: t('pages.security.passwordGenerator.require'), value: 'require' },
+                                { title: t('pages.security.passwordGenerator.allow'), value: 'allow' },
+                                { title: t('pages.security.passwordGenerator.forbid'), value: 'forbid' }
                             ]" variant="outlined" class="mb-3" />
 
                         <VSelect v-model="currentTemplate.extendedSpecial"
-                            label="Erweiterte Sonderzeichen (<>$€$|{}[]\\^`~)" :items="[
-                                { title: 'Erzwingen', value: 'require' },
-                                { title: 'Erlauben, aber nicht erzwingen', value: 'allow' },
-                                { title: 'Nicht erlauben', value: 'forbid' }
+                            :label="t('pages.security.passwordGenerator.extendedSpecial')" :items="[
+                                { title: t('pages.security.passwordGenerator.require'), value: 'require' },
+                                { title: t('pages.security.passwordGenerator.allow'), value: 'allow' },
+                                { title: t('pages.security.passwordGenerator.forbid'), value: 'forbid' }
                             ]" variant="outlined" class="mb-3" />
 
 
@@ -335,17 +343,15 @@ const getCharColor = (char) => {
                         <div class="d-flex gap-2">
                             <VBtn @click="generatePasswords" color="success"
                                 :class="{ 'opacity-50': !validateTemplate.isValid }">
-                                Generieren
+                                {{ t('pages.security.passwordGenerator.generate') }}
                             </VBtn>
                         </div>
                     </VCol>
 
                     <VCol cols="12" md="6">
-                        <h3 class="mb-4">Generierte Kennwörter</h3>
+                        <h3 class="mb-4">{{ t('pages.security.passwordGenerator.generated') }}</h3>
                         <div class="text-body-2 mb-2">
-                            <span :style="getCharColor('a')">Buchstaben</span>,
-                            <span :style="getCharColor('0')">Zahlen</span> und
-                            <span :style="getCharColor('!')">Sonderzeichen</span> haben eine andere Farbe.
+                            {{ t('pages.security.passwordGenerator.charLegend') }}
                         </div>
 
                         <div v-if="showPasswords">
@@ -363,7 +369,7 @@ const getCharColor = (char) => {
                                     <VCardActions>
                                         <VBtn @click="copyPassword(password)" variant="text">
                                             <VIcon icon="bx-copy" class="me-2" />
-                                            Kopieren
+                                            {{ t('pages.security.passwordGenerator.copyButton') }}
                                         </VBtn>
                                     </VCardActions>
                                 </VCard>
@@ -392,7 +398,7 @@ const getCharColor = (char) => {
                         </div>
 
                         <VAlert v-else type="info">
-                            Klicke auf "Kennwörter generieren", um Kennwörter zu erstellen.
+                            {{ t('pages.security.passwordGenerator.clickToGenerate') }}
                         </VAlert>
                     </VCol>
                 </VRow>

@@ -1,10 +1,11 @@
 <script setup>
+const { t } = useI18n();
 
-useHead({
-    title: 'AES Crypt online',
+useCustomI18nHead({
+    title: t('pages.crypt.aes.title'),
     meta: [
         {
-            description: 'Schnell mal Daten mit RSA ver- und entschlüsseln.',
+            description: t('pages.crypt.aes.description'),
         },
     ],
 })
@@ -34,11 +35,11 @@ const generateKey = async (length) => {
         aesPassword.value = btoa(String.fromCharCode(...new Uint8Array(exportedKey)));
         aesIv.value = btoa(String.fromCharCode(...window.crypto.getRandomValues(new Uint8Array(12))));
 
-        $toast.success('Schlüssel erfolgreich generiert', {
+        $toast.success(t('pages.crypt.aes.generateSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
-        $toast.error('Fehler beim Generieren des Schlüssels', {
+        $toast.error(t('pages.crypt.aes.generateError'), {
             position: "bottom-center",
         });
     } finally {
@@ -94,12 +95,12 @@ const encrypt = async () => {
 
         encryptedText.value = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
 
-        $toast.success('Verschlüsselung erfolgreich', {
+        $toast.success(t('pages.crypt.aes.encryptSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
         console.error(error);
-        $toast.error('Fehler beim Verschlüsseln', {
+        $toast.error(t('pages.crypt.aes.encryptError'), {
             position: "bottom-center",
         });
     } finally {
@@ -132,11 +133,11 @@ const decrypt = async () => {
 
         decryptedText.value = new TextDecoder().decode(decryptedData);
 
-        $toast.success('Entschlüsseln erfolgreich', {
+        $toast.success(t('pages.crypt.aes.decryptSuccess'), {
             position: "bottom-center",
         });
     } catch (error) {
-        $toast.error('Fehler beim Entschlüsseln', {
+        $toast.error(t('pages.crypt.aes.decryptError'), {
             position: "bottom-center",
         });
     } finally {
@@ -146,23 +147,22 @@ const decrypt = async () => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">AES Ver-/Entschlüsselung</h2>
+        <h2 class="mb-2">{{ t('pages.crypt.aes.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool können Online Daten via AES GCM ver- und entschlüsselt werden.
+                        {{ t('pages.crypt.aes.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Die Verschlüsselung wird im Browser durchgeführt, der eingegebene Text oder die ausgewählte
-                        Datei wird nicht via Netzwerk an andere Geräte übertragen.
+                        {{ t('pages.crypt.aes.descriptionPrivacy') }}
                     </div>
                     <div class="text-h6 mb-1 text-muted">
-                        Genutzt wird AES-GCM, mit wie viel Bit hängt von der Schlüsselgröße ab.
+                        {{ t('pages.crypt.aes.descriptionNote') }}
                     </div>
                 </div>
             </VCardItem>
@@ -172,25 +172,25 @@ const decrypt = async () => {
             <VCardText class="p-2">
                 <VRow>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">Schlüssel</h3>
-                        <VTextField v-model="aesPassword" class="w-100" label="AES-Schlüssel"
-                            placeholder="Base64 kodiert" :disabled="isLoading" />
-                        <small class="text-muted" v-if="getKeySize()">{{ getKeySize() }} Bit, <i>geheim
-                                halten</i></small>
-                        <small class="text-muted" v-else>Wird zur Ver- und Entschlüsselung genutzt</small>
+                        <h3 class="mb-3">{{ t('pages.crypt.aes.key') }}</h3>
+                        <VTextField v-model="aesPassword" class="w-100" :label="t('pages.crypt.aes.keyLabel')"
+                            :placeholder="t('pages.crypt.aes.keyPlaceholder')" :disabled="isLoading" />
+                        <small class="text-muted" v-if="getKeySize()">{{ getKeySize() }} {{
+                            t('pages.crypt.aes.keySizeNote') }}</small>
+                        <small class="text-muted" v-else>{{ t('pages.crypt.aes.keyUsageNote') }}</small>
                     </VCol>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-3">IV</h3>
-                        <VTextField v-model="aesIv" class="w-100" label="IV" placeholder="Base64 kodiert"
-                            :disabled="isLoading" />
-                        <small class="text-muted">Initialization Vector, <i>mit übertragen</i></small>
+                        <h3 class="mb-3">{{ t('pages.crypt.aes.iv') }}</h3>
+                        <VTextField v-model="aesIv" class="w-100" :label="t('pages.crypt.aes.ivLabel')"
+                            :placeholder="t('pages.crypt.aes.ivPlaceholder')" :disabled="isLoading" />
+                        <small class="text-muted">{{ t('pages.crypt.aes.ivTransmitted') }}</small>
                     </VCol>
                     <VCol cols="12">
                         <v-menu>
                             <template v-slot:activator="{ props }">
                                 <v-btn color="primary" v-bind="props">
                                     <i class='bx bx-key me-2'></i>
-                                    Schlüssel generieren
+                                    {{ t('pages.crypt.aes.generateKey') }}
                                 </v-btn>
                             </template>
                             <v-list>
@@ -207,19 +207,16 @@ const decrypt = async () => {
                 <VRow>
                     <VCol cols="12">
                         <h3 class="mb-3">Plaintext</h3>
-                        <textarea v-model="decryptedText" class="w-100"
-                            placeholder="Text, der verschlüsselt werden soll" rows="5" :disabled="isWorking"></textarea>
+                        <textarea v-model="decryptedText" class="w-100" rows="5" :disabled="isWorking"></textarea>
                         <VBtn color="primary" @click="encrypt" :disabled="isWorking" role="button" class="mt-2">
-                            Verschlüsseln
+                            {{ t('pages.crypt.aes.encrypt') }}
                         </VBtn>
                     </VCol>
                     <VCol cols="12">
-                        <h3 class="mb-3">Verschlüsselter Text</h3>
-                        <textarea v-model="encryptedText" class="w-100"
-                            placeholder="Text, der verschlüsselt ist und entschlüsselt werden soll" rows="5"
-                            :disabled="isWorking"></textarea>
+                        <h3 class="mb-3">{{ t('pages.crypt.aes.encryptedText') }}</h3>
+                        <textarea v-model="encryptedText" class="w-100" rows="5" :disabled="isWorking"></textarea>
                         <VBtn color="primary" @click="decrypt" :disabled="isWorking" role="button" class="mt-2">
-                            Entschlüsseln
+                            {{ t('pages.crypt.aes.decrypt') }}
                         </VBtn>
                     </VCol>
                 </VRow>

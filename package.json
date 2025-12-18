@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@floating-ui/dom": "1.6.8",
+    "@nuxtjs/i18n": "^10.2.1",
     "@stylistic/stylelint-config": "^1.0.1",
     "@vueuse/core": "^10.11.1",
     "@vueuse/math": "^10.11.1",

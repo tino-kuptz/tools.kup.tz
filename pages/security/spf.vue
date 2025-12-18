@@ -1,9 +1,11 @@
 <script setup>
-import { computed, nextTick, onMounted, reactive, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, watch } from 'vue';
 
-useHead({
-    title: 'SPF Generator',
-    meta: [{ description: 'Erstellt SPF-DNS-Einträge via UI im Browser.' }],
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.security.spf.title'),
+    meta: [{ description: t('pages.security.spf.description') }],
 })
 
 const { $toast } = useNuxtApp()
@@ -77,7 +79,7 @@ const parseSpf = () => {
     if (!raw) return
     const tokens = raw.split(/\s+/).filter(Boolean)
     if (tokens.length === 0 || tokens[0].toLowerCase() !== 'v=spf1') {
-        $toast?.error('Ungültiger SPF-Record. Erwartet: beginnt mit v=spf1', { position: 'bottom-center' })
+        $toast?.error(t('pages.security.spf.importError'), { position: 'bottom-center' })
         return
     }
 
@@ -101,29 +103,29 @@ const parseSpf = () => {
     normalizeList(spf.ip4List)
     normalizeList(spf.ip6List)
     normalizeList(spf.includeList)
-    $toast?.success('SPF-Record importiert', { position: 'bottom-center' })
+    $toast?.success(t('pages.security.spf.importSuccess'), { position: 'bottom-center' })
 }
 
 const copySpf = async () => {
     try {
         await navigator.clipboard.writeText(buildSpfRecord.value)
-        $toast.success('SPF-Eintrag kopiert', { position: 'bottom-center' })
+        $toast.success(t('pages.security.spf.copySuccess'), { position: 'bottom-center' })
     } catch (e) {
-        $toast.error('Fehler beim Kopieren des SPF-Eintrags: ' + e.message, { position: 'bottom-center' })
+        $toast.error(t('pages.security.spf.copyError') + ': ' + e.message, { position: 'bottom-center' })
     }
 }
 </script>
 
 <template>
     <div>
-        <h1 class="mb-4">SPF Generator</h1>
+        <h1 class="mb-4">{{ t('pages.security.spf.heading') }}</h1>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
-                    <div class="text-overline mb-2">Über dieses Tool</div>
+                    <div class="text-overline mb-2">{{ t('common.about') }}</div>
                     <div class="text-h6 mb-1">
-                        Erstelle SPF-DNS-Einträge komfortabel im Browser. Es werden keine Daten an den Server gesendet.
+                        {{ t('pages.security.spf.descriptionText') }}
                     </div>
                 </div>
             </VCardItem>
@@ -133,14 +135,13 @@ const copySpf = async () => {
             <VCardText>
                 <VRow>
                     <VCol cols="12" md="6">
-                        <h3 class="mb-4">Parameter</h3>
+                        <h3 class="mb-4">{{ t('pages.security.spf.parameters') }}</h3>
 
-                        <VCheckbox v-model="spf.a" label="A-Record erlauben (a)" class="mb-2" />
-                        <VCheckbox v-model="spf.mx" label="MX-Record erlauben (mx)" class="mb-4" />
+                        <VCheckbox v-model="spf.a" :label="t('pages.security.spf.allowA')" class="mb-2" />
+                        <VCheckbox v-model="spf.mx" :label="t('pages.security.spf.allowMx')" class="mb-4" />
 
-                        <h4>IPv4</h4>
-                        <small class="d-block mb-3">IPv4-Adressen, von denen E-Mails von der Domäne gesendet werden
-                            dürfen.</small>
+                        <h4>{{ t('pages.security.spf.ipv4') }}</h4>
+                        <small class="d-block mb-3">{{ t('pages.security.spf.ipv4Desc') }}</small>
                         <div v-for="(item, idx) in spf.ip4List" :key="'ip4-' + idx"
                             class="d-flex align-center gap-2 mb-2" data-kind="ip4">
                             <VTextField v-model="spf.ip4List[idx]" label="IPv4" variant="outlined" hide-details
@@ -151,9 +152,8 @@ const copySpf = async () => {
                             </VBtn>
                         </div>
 
-                        <h4 class="mt-4">IPv6</h4>
-                        <small class="d-block mb-3">IPv6-Adressen, von denen E-Mails von der Domäne gesendet werden
-                            dürfen.</small>
+                        <h4 class="mt-4">{{ t('pages.security.spf.ipv6') }}</h4>
+                        <small class="d-block mb-3">{{ t('pages.security.spf.ipv6Desc') }}</small>
                         <div v-for="(item, idx) in spf.ip6List" :key="'ip6-' + idx"
                             class="d-flex align-center gap-2 mb-2" data-kind="ip6">
                             <VTextField v-model="spf.ip6List[idx]" label="IPv6" variant="outlined" hide-details
@@ -164,20 +164,20 @@ const copySpf = async () => {
                             </VBtn>
                         </div>
 
-                        <h4 class="mt-4">Include-Domains</h4>
-                        <small class="d-block mb-3">SPF-Einträge von anderen Domains mit übernehmen.</small>
+                        <h4 class="mt-4">{{ t('pages.security.spf.includeDomains') }}</h4>
+                        <small class="d-block mb-3">{{ t('pages.security.spf.includeDomainsDesc') }}</small>
                         <div v-for="(item, idx) in spf.includeList" :key="'inc-' + idx"
                             class="d-flex align-center gap-2 mb-2" data-kind="include">
-                            <VTextField v-model="spf.includeList[idx]" label="Domain" variant="outlined" hide-details
-                                @keydown.backspace="onBackspaceEmpty('include', idx)" />
+                            <VTextField v-model="spf.includeList[idx]" :label="t('common.domain')" variant="outlined"
+                                hide-details @keydown.backspace="onBackspaceEmpty('include', idx)" />
                             <VBtn v-if="spf.includeList.length > 1 && (spf.includeList[idx] || '').trim() !== ''"
                                 variant="text" @click="removeFromList(spf.includeList, idx)">
                                 <VIcon icon="bx-x" />
                             </VBtn>
                         </div>
 
-                        <h4 class="mt-4">Fallback-Policy</h4>
-                        <small class="d-block mb-3">Wie soll der Empfänger auf ungültige E-Mails reagieren?</small>
+                        <h4 class="mt-4">{{ t('pages.security.spf.fallbackPolicy') }}</h4>
+                        <small class="d-block mb-3">{{ t('pages.security.spf.fallbackPolicyDesc') }}</small>
                         <VSelect v-model="spf.policy" label="Policy" :items="[
                             { title: 'SoftFail (~all)', value: '~all' },
                             { title: 'HardFail (-all)', value: '-all' },
@@ -187,21 +187,19 @@ const copySpf = async () => {
                     </VCol>
 
                     <VCol cols="12" md="6">
-                        <h3 class="mb-2">SPF importieren</h3>
-                        <small class="d-block mb-3">Bestehenden SPF-Eintrag einfügen, die Einstellungen links werden
-                            entsprechend gesetzt.</small>
-                        <VTextField v-model="spfImport.value" label="SPF importieren"
+                        <h3 class="mb-2">{{ t('pages.security.spf.import') }}</h3>
+                        <small class="d-block mb-3">{{ t('pages.security.spf.importDesc') }}</small>
+                        <VTextField v-model="spfImport.value" :label="t('pages.security.spf.import')"
                             placeholder="v=spf1 a mx ip4:203.0.113.10/32 ~all" variant="outlined" class="mb-3"
                             @keyup.enter="parseSpf" />
                         <div class="d-flex justify-end mb-4">
                             <VBtn color="primary" @click="parseSpf">
-                                Importieren
+                                {{ t('pages.security.spf.importButton') }}
                             </VBtn>
                         </div>
 
-                        <h3>Generierter SPF-Eintrag</h3>
-                        <small class="d-block mb-3">Der Eintrag kann als TXT-Record für die Domäne eingetragen
-                            werden.</small>
+                        <h3>{{ t('pages.security.spf.generatedEntry') }}</h3>
+                        <small class="d-block mb-3">{{ t('pages.security.spf.generatedEntryDesc') }}</small>
 
                         <VCard variant="outlined">
                             <VCardText>
@@ -212,7 +210,7 @@ const copySpf = async () => {
                         <div class="d-flex justify-end mt-3">
                             <VBtn color="primary" @click="copySpf">
                                 <VIcon icon="bx-copy" class="me-2" />
-                                Zwischenablage
+                                {{ t('common.clipboard') }}
                             </VBtn>
                         </div>
                     </VCol>

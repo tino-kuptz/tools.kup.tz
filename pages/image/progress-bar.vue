@@ -1,11 +1,13 @@
 <script setup>
 import { ref, watch } from 'vue';
 
-useHead({
-    title: 'Progress bar Generator',
+const { t } = useI18n();
+
+useCustomI18nHead({
+    title: t('pages.image.progressBar.title'),
     meta: [
         {
-            description: 'Fortschrittsbalken via URL generieren, nutzbar z.B. in Markdown.',
+            description: t('pages.image.progressBar.description'),
         },
     ],
 });
@@ -49,11 +51,11 @@ const changedParameters = computed(() => {
 
 const copyToClipboard = (data) => {
     navigator.clipboard.writeText(data).then(() => {
-        $toast.success('Wurde in die Zwischenablage kopiert', {
+        $toast.success(t('pages.image.progressBar.copySuccess'), {
             position: "bottom-center",
         });
     }).catch(err => {
-        $toast.error('Fehler beim Kopieren:\n' + err.message, {
+        $toast.error(t('pages.image.progressBar.copyError') + ':\n' + err.message, {
             position: "bottom-center",
         });
     });
@@ -96,21 +98,19 @@ const svgGraphic = computed(() => {
 </script>
 <template>
     <div>
-        <h2 class="mb-2">Progress bar generator</h2>
+        <h2 class="mb-2">{{ t('pages.image.progressBar.heading') }}</h2>
 
         <VCard color="secondary" variant="elevated" class="mb-4">
             <VCardItem>
                 <div>
                     <div class="text-overline mb-2">
-                        Über dieses Tool
+                        {{ t('common.about') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Mit diesem Tool kann eine URL für einen Fortschrittsbalken generiert werden, der in Markdown
-                        oder HTML verwendet werden kann.
+                        {{ t('pages.image.progressBar.descriptionText') }}
                     </div>
                     <div class="text-h6 mb-1">
-                        Der Fortschrittbalken wird als SVG generiert und kann in verschiedenen Größen und Farben
-                        angepasst werden.
+                        {{ t('pages.image.progressBar.descriptionNote') }}
                     </div>
                 </div>
             </VCardItem>
@@ -120,65 +120,67 @@ const svgGraphic = computed(() => {
             <VCol cols="12" md="6">
                 <VCard>
                     <VCardTitle>
-                        <h2 class="mt-4 ml-2 mb-4">Eigenschaften</h2>
+                        <h2 class="mt-4 ml-2 mb-4">{{ t('pages.image.progressBar.properties') }}</h2>
                     </VCardTitle>
                     <VCardText class="p-2">
                         <VRow>
                             <VCol cols="12" lg="8">
-                                <VSlider v-model="percentage" :min="0" :max="100" step="1" label="Prozent (%)"
-                                    thumb-label class="mt-2" />
+                                <VSlider v-model="percentage" :min="0" :max="100" step="1"
+                                    :label="t('pages.image.progressBar.percent')" thumb-label class="mt-2" />
                             </VCol>
                             <VCol cols="12" lg="4">
-                                <VSelect v-model="type" :items="['svg']" label="Typ" item-title="type" item-value="type"
-                                    disabled="" />
+                                <VSelect v-model="type" :items="['svg']" :label="t('pages.image.progressBar.type')"
+                                    item-title="type" item-value="type" disabled="" />
                             </VCol>
                             <VCol cols="12" lg="6">
-                                <VTextField v-model.number="currentData.width" label="Breite (px)" type="number"
-                                    min="50" max="1000" />
+                                <VTextField v-model.number="currentData.width"
+                                    :label="t('pages.image.progressBar.width')" type="number" min="50" max="1000" />
                             </VCol>
                             <VCol cols="12" lg="6">
-                                <VTextField v-model.number="currentData.height" label="Höhe (px)" type="number" min="15"
-                                    max="50" />
+                                <VTextField v-model.number="currentData.height"
+                                    :label="t('pages.image.progressBar.height')" type="number" min="15" max="50" />
                             </VCol>
                             <VCol cols="12" lg="6">
-                                <VTextField v-model="currentData.backgroundColor" label="Hintergrundfarbe" type="color"
-                                    hide-details />
+                                <VTextField v-model="currentData.backgroundColor"
+                                    :label="t('pages.image.progressBar.backgroundColor')" type="color" hide-details />
                             </VCol>
                             <VCol cols="12" lg="6">
-                                <VTextField v-model="currentData.textColor" label="Textfarbe" type="color"
-                                    hide-details />
+                                <VTextField v-model="currentData.textColor"
+                                    :label="t('pages.image.progressBar.textColor')" type="color" hide-details />
                             </VCol>
                             <VCol cols="12" lg="6">
-                                <VTextField v-model.number="currentData.textSize" label="Textgröße (px)" type="number"
-                                    min="10" max="30" />
+                                <VTextField v-model.number="currentData.textSize"
+                                    :label="t('pages.image.progressBar.textSize')" type="number" min="10" max="30" />
                             </VCol>
                             <VCol cols="12" lg="6">
-                                <VTextField v-model="currentData.barColorOk" label="Balkenfarbe (OK)" type="color"
-                                    hide-details />
+                                <VTextField v-model="currentData.barColorOk"
+                                    :label="t('pages.image.progressBar.barColorOk')" type="color" hide-details />
                             </VCol>
                             <VCol cols="12" lg="6">
-                                <VTextField v-model="currentData.barColorWarn" label="Balkenfarbe (Warnung)"
-                                    type="color" hide-details />
+                                <VTextField v-model="currentData.barColorWarn"
+                                    :label="t('pages.image.progressBar.barColorWarn')" type="color" hide-details />
                             </VCol>
                             <VCol cols="12" lg="6">
-                                <VTextField v-model="currentData.barColorError" label="Balkenfarbe (Fehler)"
-                                    type="color" hide-details />
+                                <VTextField v-model="currentData.barColorError"
+                                    :label="t('pages.image.progressBar.barColorError')" type="color" hide-details />
                             </VCol>
                             <VCol cols="12" lg="4">
-                                <VTextField v-model.number="currentData.thresholdWarn" label="Warnung ab (%)"
-                                    type="number" min="0" max="100" />
+                                <VTextField v-model.number="currentData.thresholdWarn"
+                                    :label="t('pages.image.progressBar.thresholdWarn')" type="number" min="0"
+                                    max="100" />
                             </VCol>
                             <VCol cols="12" lg="4">
-                                <VTextField v-model.number="currentData.thresholdError" label="Fehler ab (%)"
-                                    type="number" min="0" max="100" />
+                                <VTextField v-model.number="currentData.thresholdError"
+                                    :label="t('pages.image.progressBar.thresholdError')" type="number" min="0"
+                                    max="100" />
                             </VCol>
                             <VCol cols="12" lg="4">
-                                <VTextField v-model.number="currentData.borderWidth" label="Rahmenbreite (px)"
-                                    type="number" min="0" />
+                                <VTextField v-model.number="currentData.borderWidth"
+                                    :label="t('pages.image.progressBar.borderWidth')" type="number" min="0" />
                             </VCol>
                             <VCol cols="12">
                                 <v-btn color="secondary" @click="resetData" class="mt-2">
-                                    Zurücksetzen
+                                    {{ t('pages.image.progressBar.reset') }}
                                 </v-btn>
                             </VCol>
                         </VRow>
@@ -188,31 +190,30 @@ const svgGraphic = computed(() => {
             <VCol cols="12" md="6">
                 <VCard class="h-100">
                     <VCardTitle>
-                        <h2 class="mt-4 ml-2 mb-4">Ausgabe</h2>
+                        <h2 class="mt-4 ml-2 mb-4">{{ t('pages.image.progressBar.output') }}</h2>
                     </VCardTitle>
                     <VCardText class="p-2 mb-auto">
-                        <h3 class="pb-2">Ansicht</h3>
-                        <img :src="svgGraphic" alt="Fortschrittsbalken" />
-                        <small><br>(im Browser gerendert)</small>
+                        <h3 class="pb-2">{{ t('pages.image.progressBar.preview') }}</h3>
+                        <img :src="svgGraphic" :alt="t('pages.image.progressBar.preview')" />
+                        <small><br>{{ t('pages.image.progressBar.previewNote') }}</small>
                         <h3 class="pt-5 pb-3">
-                            Base64 URL
-                            <small class="ps-3">(funktioniert ohne tools.kup.tz)</small>
+                            {{ t('pages.image.progressBar.base64Url') }}
+                            <small class="ps-3">{{ t('pages.image.progressBar.worksWithout') }}</small>
                         </h3>
-                        <VTextField v-model="svgGraphic" label="Generierte URL" readonly />
-                        <small>
-                            (für embedding, bspw. <code>&lt;img src="..." alt="{{ percentage }}%" /&gt;</code>)
+                        <VTextField v-model="svgGraphic" :label="t('pages.image.progressBar.generatedUrl')" readonly />
+                        <small v-html="t('pages.image.progressBar.base64UrlDesc', { percent: percentage })">
                         </small>
                         <div class="text-start mb-2">
                             <v-btn color="primary" @click="copyToClipboard(svgGraphic)" class="mt-2" size="small">
-                                Zwischenablage
+                                {{ t('pages.image.progressBar.clipboard') }}
                             </v-btn>
                         </div>
-                        <h3 class="pt-5 pb-3">URL</h3>
-                        <VTextField v-model="outputUrl" label="Generierte URL" readonly />
-                        <small>(für Einbindung via URL)</small>
+                        <h3 class="pt-5 pb-3">{{ t('pages.image.progressBar.url') }}</h3>
+                        <VTextField v-model="outputUrl" :label="t('pages.image.progressBar.generatedUrl')" readonly />
+                        <small>{{ t('pages.image.progressBar.urlDesc') }}</small>
                         <div class="text-start">
                             <v-btn color="primary" @click="copyToClipboard(outputUrl)" class="mt-2 btn-sm" size="small">
-                                Zwischenablage
+                                {{ t('pages.image.progressBar.clipboard') }}
                             </v-btn>
                         </div>
                     </VCardText>
