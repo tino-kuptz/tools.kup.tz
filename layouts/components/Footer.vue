@@ -15,6 +15,9 @@
     <span class="d-md-flex gap-x-4 text-primary d-block">
       <a href="https://www.tino-kuptz.de/impressum/" target="noopener noreferrer">Impressum</a>
       <a href="https://www.tino-kuptz.de/datenschutzerklaerung/" target="noopener noreferrer">Datenschutz</a>
+      <a href="https://github.com/tino-kuptz/tools.kup.tz/commit/{##LONG_GIT_COMMIT_HASH##}">
+        {##SHORT_GIT_COMMIT_HASH##}
+      </a>
     </span>
   </div>
 </template>

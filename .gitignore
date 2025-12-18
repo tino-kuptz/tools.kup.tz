@@ -39,9 +39,6 @@ logs
 *.sw?
 .yarn
 
-# iconify dist files
-plugins/iconify/icons.css
-
 # Ignore MSW script
 public/mockServiceWorker.js
 
@@ -52,3 +49,6 @@ public/mockServiceWorker.js
 .DS_Store
 
 .wrangler
+
+.secrets
+.development
