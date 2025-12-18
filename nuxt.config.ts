@@ -141,6 +141,11 @@ export default defineNuxtConfig({
     },
   },
 
+  routeRules: {
+    // Die ändert sich sowieso mit jedem mal rendern
+    '/track/http/**': { prerender: false },
+  },
+
   modules: [
     [
       '@vueuse/nuxt',
