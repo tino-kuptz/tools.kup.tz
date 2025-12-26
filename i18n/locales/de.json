@@ -641,6 +641,24 @@
         "clipboard": "Zwischenablage",
         "copySuccess": "Wurde in die Zwischenablage kopiert",
         "copyError": "Fehler beim Kopieren"
+      },
+      "html2markdown": {
+        "title": "HTML zu Markdown",
+        "description": "Wandelt HTML-Code in Markdown-Format um.",
+        "heading": "HTML zu Markdown",
+        "descriptionText": "Mit diesem Tool kannst du HTML-Code schnell in Markdown-Format umwandeln.",
+        "descriptionPrivacy": "Die Konvertierung wird vollständig im Browser durchgeführt, sodass keine Daten an einen Server gesendet werden.",
+        "htmlInput": "HTML Eingabe",
+        "htmlPlaceholder": "Füge deinen HTML-Code hier ein...",
+        "markdownOutput": "Markdown Ausgabe",
+        "markdownPlaceholder": "Der konvertierte Markdown-Code erscheint hier...",
+        "convertButton": "Konvertieren",
+        "clear": "Löschen",
+        "copy": "Kopieren",
+        "copySuccess": "Wurde in die Zwischenablage kopiert",
+        "copyError": "Fehler beim Kopieren",
+        "convertError": "Fehler beim Konvertieren",
+        "notReady": "Das Tool wird noch geladen. Bitte warte einen Moment."
       }
     },
     "image": {
