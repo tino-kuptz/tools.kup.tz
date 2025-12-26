@@ -39,6 +39,14 @@ const tools = [
         tokens: 0,
     },
     {
+        name: { de: "HTML zu Markdown", en: "HTML to Markdown" },
+        description: { de: "Wandelt HTML-Code in Markdown-Format um.", en: "Converts HTML code to Markdown format." },
+        link: "/formatting/html2markdown",
+        category: [{ de: "Formattierung", en: "Formatting" }],
+        tags: ["HTML", "Markdown"],
+        tokens: 0,
+    },
+    {
         name: { de: "FRITZ!Box XML zu CSV", en: "FRITZ!Box XML to CSV" },
         description: { de: "Wandelt ein FRITZ!Box XML Adressbuch zu CSV um.", en: "Converts a FRITZ!Box XML address book to CSV." },
         link: "/formatting/fritzbox-xml2csv",
