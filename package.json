@@ -38,7 +38,7 @@
     "vue3-perfect-scrollbar": "^2.0.0",
     "vuetify": "3.7.5",
     "webfontloader": "^1.6.28",
-    "wrangler": "^4.55.0",
+    "wrangler": "^4.59.3",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
