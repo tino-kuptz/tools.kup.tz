@@ -127,6 +127,32 @@
         }
       }
     },
+    "network": {
+      "subnet": {
+        "title": "Subnet Calculator",
+        "description": "Calculates subnet information and allows splitting subnets.",
+        "heading": "Subnet Calculator",
+        "about": "About this tool",
+        "description1": "With this tool you can calculate subnet information. Enter an IP address and a subnet mask (as prefix or as long mask).",
+        "description2": "The tool displays the network address, the first and last usable IP address, and the broadcast address. Additionally, the subnet can be split into multiple smaller subnets.",
+        "input": "Input",
+        "inputDescription": "Enter an IP address and either a prefix length (e.g. /24) or a subnet mask (e.g. 255.255.255.0). The two values will be automatically synchronized.",
+        "ipAddress": "IP Address",
+        "prefix": "Prefix",
+        "subnetMask": "Subnet Mask",
+        "subnetInfo": "Subnet Information",
+        "quickSelect": "Quick Select",
+        "splitLabel": "I want to split into",
+        "splitSuffix": "subnets",
+        "splitSubnets": "Split Subnets",
+        "table": {
+          "subnet": "Subnet",
+          "firstIP": "First IP",
+          "lastIP": "Last IP",
+          "broadcast": "Broadcast"
+        }
+      }
+    },
     "hash": {
       "md5": {
         "title": "MD5 Hash Generator",

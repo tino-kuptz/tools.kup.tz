@@ -214,6 +214,14 @@ const tools = [
         tags: ["TOTP", "2FA", "OTP"],
         tokens: 0,
     },
+    {
+        name: { de: "Subnetzrechner", en: "Subnet Calculator" },
+        description: { de: "Berechnet Subnetz-Informationen und ermöglicht das Aufteilen von Subnetzen.", en: "Calculates subnet information and allows splitting subnets." },
+        link: "/network/subnet",
+        category: [{ de: "Netzwerk", en: "Network" }],
+        tags: ["Subnet", "IP", "Network"],
+        tokens: 0,
+    },
 ];
 
 // Helper to get translated tool
