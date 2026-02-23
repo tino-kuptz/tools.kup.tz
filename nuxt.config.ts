@@ -135,10 +135,6 @@ export default defineNuxtConfig({
     output: {
       dir: 'dist',
     },
-    prerender: {
-      crawlLinks: true,
-      autoSubfolderIndex: false,
-    },
   },
 
   routeRules: {
