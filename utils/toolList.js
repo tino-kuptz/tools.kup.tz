@@ -47,6 +47,14 @@ const tools = [
         tokens: 0,
     },
     {
+        name: { de: "EML Viewer", en: "EML Viewer" },
+        description: { de: "Zeigt den Inhalt von EML-Dateien an.", en: "Displays the content of EML files." },
+        link: "/formatting/eml-viewer",
+        category: [{ de: "Formattierung", en: "Formatting" }, { de: "Troubleshooting", en: "Troubleshooting" }],
+        tags: ["EML", "E-Mail"],
+        tokens: 0,
+    },
+    {
         name: { de: "FRITZ!Box XML zu CSV", en: "FRITZ!Box XML to CSV" },
         description: { de: "Wandelt ein FRITZ!Box XML Adressbuch zu CSV um.", en: "Converts a FRITZ!Box XML address book to CSV." },
         link: "/formatting/fritzbox-xml2csv",
