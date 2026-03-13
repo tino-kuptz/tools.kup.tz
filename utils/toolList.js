@@ -55,6 +55,14 @@ const tools = [
         tokens: 0,
     },
     {
+        name: { de: "MSG Viewer", en: "MSG Viewer" },
+        description: { de: "Zeigt den Inhalt von MSG-Dateien (Outlook) an.", en: "Displays the content of MSG files (Outlook)." },
+        link: "/formatting/msg-viewer",
+        category: [{ de: "Formattierung", en: "Formatting" }, { de: "Troubleshooting", en: "Troubleshooting" }],
+        tags: ["MSG", "Outlook", "E-Mail"],
+        tokens: 0,
+    },
+    {
         name: { de: "FRITZ!Box XML zu CSV", en: "FRITZ!Box XML to CSV" },
         description: { de: "Wandelt ein FRITZ!Box XML Adressbuch zu CSV um.", en: "Converts a FRITZ!Box XML address book to CSV." },
         link: "/formatting/fritzbox-xml2csv",
