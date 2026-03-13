@@ -8,10 +8,13 @@
     "build": "npx nuxt build",
     "generate": "npx nuxt generate",
     "preview": "npm run build && wrangler pages dev",
-    "deploy": "npm run build && wrangler pages deploy"
+    "deploy": "npm run build && wrangler pages deploy",
+    "postinstall": "nuxt prepare",
+    "clean": "nuxi cleanup"
   },
   "dependencies": {
     "@floating-ui/dom": "1.6.8",
+    "@npeersab/msgreader": "^2.0.1",
     "@nuxtjs/i18n": "^10.2.1",
     "@stylistic/stylelint-config": "^1.0.1",
     "@vueuse/core": "^10.11.1",
