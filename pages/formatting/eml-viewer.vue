@@ -108,7 +108,14 @@ function stripHtml(html) {
     const all = doc.querySelectorAll('*');
     all.forEach((el) => {
       Array.from(el.attributes).forEach((attr) => {
-        if (attr.name.startsWith('on') || (attr.name === 'href' && (attr.value || '').toLowerCase().startsWith('javascript:'))) {
+        const value = (attr.value || '').toLowerCase();
+        if (
+          attr.name.startsWith('on') ||
+          (attr.name === 'href' &&
+            (value.startsWith('javascript:') ||
+              value.startsWith('data:') ||
+              value.startsWith('vbscript:')))
+        ) {
           el.removeAttribute(attr.name);
         }
       });
