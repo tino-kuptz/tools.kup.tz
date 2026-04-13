@@ -9,13 +9,6 @@
   "observability": {
     "enabled": true
   },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "tools-kup-tz",
-      "database_id": "3488b165-d128-4c48-bf19-6f4e15bd2990"
-    },
-  ],
   "kv_namespaces": [
     {
       "binding": "KV",

@@ -1,6 +1,6 @@
 <script setup>
-import { NuxtLink } from '#components'
-
+// Avoid `#components` in Vite 7 dep-scan (Nuxt 4); Nuxt auto-registers NuxtLink
+const NuxtLink = resolveComponent('NuxtLink')
 
 const props = defineProps({
   item: {

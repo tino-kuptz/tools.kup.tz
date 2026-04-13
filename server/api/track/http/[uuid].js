@@ -1,4 +1,5 @@
 import { get_tool_by_url } from "~/utils/toolList.js";
+import { usePostgres } from "../../../utils/postgres";
 import { getClientUsageLimits, hasClientConsumedToken, trackClientTokens } from "../../../utils/usage.js";
 
 export default defineEventHandler(async (event) => {
@@ -45,11 +46,11 @@ export default defineEventHandler(async (event) => {
         await trackClientTokens(event, requiredTokens, 'http_log', uuid);
     }
 
-    // Return the logs for this uuid
-    const stmt = event.context.cloudflare.env.DB
-        .prepare('SELECT host, headers, body, timestamp, ip, method, url, user_agent, created_at FROM http_request_logs WHERE host = ? OR url LIKE ? ORDER BY created_at DESC LIMIT 200;')
-        .bind(uuid, `%${uuid}%`);
-    const rows = ((await stmt.run()).results) || [];
+    const { rows } = await usePostgres().query(
+        `SELECT host, headers, body, logged_at AS timestamp, ip, method, url, user_agent, created_at
+         FROM http_request_logs WHERE host = $1 OR url LIKE $2 ORDER BY created_at DESC LIMIT 200`,
+        [uuid, `%${uuid}%`],
+    );
 
     return {
         success: true,

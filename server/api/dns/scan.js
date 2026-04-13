@@ -1,23 +1,23 @@
 import dns from "node:dns/promises";
 
 import { get_tool_by_url } from "~/utils/toolList.js";
-import { getClientUsageLimits } from "../../utils/usage.js";
+import { dnsScanCacheGet, dnsScanCacheSet } from "../../utils/dnsScanCache.js";
+import { getClientUsageLimits, trackClientTokens } from "../../utils/usage.js";
 
-const findRecords = async (event, domain) => {
-    var dataFromCrtSh = await event.context.cloudflare.env.KV.get(`crtsh_${domain}`);
+const CRTSH_TTL_SEC = 60 * 60 * 4;
+const DNSSCAN_TTL_SEC = 60 * 60;
+
+const findRecords = async (domain) => {
+    const cacheKey = `crtsh_${domain}`;
+    let dataFromCrtSh = await dnsScanCacheGet(cacheKey);
     if (!dataFromCrtSh) {
-        //console.log('Fetching data from crt.sh');
         const response = await fetch(`https://crt.sh/?CN=${domain}&output=json`);
         dataFromCrtSh = await response
             .json()
             .catch(() => []);
-        // Cache 4 hours
         if (dataFromCrtSh.length > 0) {
-            await event.context.cloudflare.env.KV.put(`crtsh_${domain}`, JSON.stringify(dataFromCrtSh), { expirationTtl: 60 * 60 * 4 });
+            await dnsScanCacheSet(cacheKey, dataFromCrtSh, CRTSH_TTL_SEC);
         }
-    } else {
-        //console.log('Using cached data from KV');
-        dataFromCrtSh = JSON.parse(dataFromCrtSh);
     }
 
     return dataFromCrtSh
@@ -48,12 +48,13 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    var checkIfInCache = await event.context.cloudflare.env.KV.get(`dnsscan_${domain}`);
-    if (checkIfInCache) {
+    const dnsscanKey = `dnsscan_${domain}`;
+    const cachedScan = await dnsScanCacheGet(dnsscanKey);
+    if (cachedScan) {
         return {
             success: true,
             data: {
-                records: JSON.parse(checkIfInCache),
+                records: cachedScan,
             },
             usage,
         };
@@ -62,7 +63,7 @@ export default defineEventHandler(async (event) => {
     var domains = [
         `${domain}`,
         `autodiscover.${domain}`,
-        ... await findRecords(event, domain),
+        ... await findRecords(domain),
     ]
         .filter((value, index, array) => array.indexOf(value) === index)
     // Wegen Cloudflare limits... leider
@@ -180,8 +181,7 @@ export default defineEventHandler(async (event) => {
         usage.remaining -= requiredTokens;
         await trackClientTokens(event, requiredTokens, 'dns-scan', domain);
 
-        // 1 Stunde in den Cache hauen
-        await event.context.cloudflare.env.KV.put(`dnsscan_${domain}`, JSON.stringify(retRecords), { expirationTtl: 60 * 60 });
+        await dnsScanCacheSet(dnsscanKey, retRecords, DNSSCAN_TTL_SEC);
 
         return {
             success: true,

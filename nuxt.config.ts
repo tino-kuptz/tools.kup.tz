@@ -6,6 +6,10 @@ import svgLoader from 'vite-svg-loader';
 
 export default defineNuxtConfig({
   ssr: true,
+
+  // App source lives under ./app (Nuxt 4 + Vite 7 expect consistent ~ / @ resolution)
+  srcDir: 'app/',
+
   app: {
     head: {
       titleTemplate: '%s - tools.kup.tz',
@@ -23,8 +27,11 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
+  // Order matters: Vuetify base → Vuetify theme overrides → app shell (Nuxt 4 + Vite 7)
   css: [
-    '@core/scss/template/index.scss',
+    'vuetify/styles',
+    '@core/scss/template/libs/vuetify/index.scss',
+    '@/@core/scss/template/index.scss',
     '@styles/styles.scss',
     '@/plugins/iconify/icons.css',
     '@layouts/styles/index.scss',
@@ -87,14 +94,20 @@ export default defineNuxtConfig({
   vite: {
     define: { 'process.env': {} },
 
+    // Required so Vuetify SSR bundle resolves theme/CSS variable injection correctly (Nuxt 4 + Vite 7)
+    ssr: {
+      noExternal: ['vuetify'],
+    },
+
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('.', import.meta.url)),
-        '@core': fileURLToPath(new URL('./@core', import.meta.url)),
-        '@layouts': fileURLToPath(new URL('./@layouts', import.meta.url)),
-        '@images': fileURLToPath(new URL('./assets/images/', import.meta.url)),
-        '@styles': fileURLToPath(new URL('./assets/styles/', import.meta.url)),
-        '@configured-variables': fileURLToPath(new URL('./assets/styles/variables/_template.scss', import.meta.url)),
+        // Project-root aliases (nuxt.config lives in repo root)
+        '@': fileURLToPath(new URL('./app', import.meta.url)),
+        '@core': fileURLToPath(new URL('./app/@core', import.meta.url)),
+        '@layouts': fileURLToPath(new URL('./app/@layouts', import.meta.url)),
+        '@images': fileURLToPath(new URL('./app/assets/images/', import.meta.url)),
+        '@styles': fileURLToPath(new URL('./app/assets/styles/', import.meta.url)),
+        '@configured-variables': fileURLToPath(new URL('./app/assets/styles/variables/_template.scss', import.meta.url)),
         'pinia': fileURLToPath(new URL('./node_modules/pinia/dist/pinia.mjs', import.meta.url)),
       },
     },
@@ -106,16 +119,13 @@ export default defineNuxtConfig({
     optimizeDeps: {
       exclude: ['vuetify'],
       include: ['pinia'],
-      entries: [
-        './**/*.vue',
-      ],
     },
 
     plugins: [
       svgLoader(),
       vuetify({
         styles: {
-          configFile: 'assets/styles/variables/_vuetify.scss',
+          configFile: fileURLToPath(new URL('./app/assets/styles/variables/_vuetify.scss', import.meta.url)),
         },
       }),
     ],
@@ -130,7 +140,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'cloudflare-pages',
+    preset: 'node-server',
     compressPublicAssets: true,
     output: {
       dir: 'dist',
@@ -172,20 +182,12 @@ export default defineNuxtConfig({
         ],
         defaultLocale: 'de',
         strategy: 'prefix_except_default',
-        langDir: 'locales',
+        langDir: '../i18n/locales',
         detectBrowserLanguage: {
           useCookie: true,
           cookieKey: 'i18n_redirected',
           redirectOn: 'root',
         },
-      },
-    ], [
-      'nitro-cloudflare-dev',
-      {}
-    ], [
-      'nuxt-cloudflare-analytics',
-      {
-        token: 'e5623f60cfb54573bbb098e1c13a932c',
       },
     ],
   ],
