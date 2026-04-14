@@ -18,7 +18,8 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-COPY --from=build /app/dist ./dist
+COPY --chown=node:node --from=build /app/dist ./dist
+USER node
 
 EXPOSE 3000
 
