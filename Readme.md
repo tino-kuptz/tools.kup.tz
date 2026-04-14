@@ -30,6 +30,8 @@ A postgres database is connected in the background.
 
 The schema for this can be found in `db.sql`.
 
+Here is a [gist for a docker compose file](https://gist.github.com/tino-kuptz/a200b6cf8e5c025a2edf40c0b019413c).
+
 ### Tokens
 
 Since some tools require server code, and I'm the idiot hosting the container / heating his server wardrobe, this tool uses anonymized IP addresses to track usage.
