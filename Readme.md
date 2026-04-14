@@ -1,6 +1,6 @@
 # tools.kup.tz
 
-A serverless website with various tools, hosted on Cloudflare.
+A website hosting various tools, powered by postgres.
 
 ## Motivation
 
@@ -24,15 +24,15 @@ Info to quickly understand the project.
 
 ### Hosting
 
-Hosting is on Cloudflare Pages. 
+Hosting is as docker container.
 
-A D1 database is connected in the background.
+A postgres database is connected in the background.
 
 The schema for this can be found in `db.sql`.
 
 ### Tokens
 
-Since some tools require server code, and I'm the idiot whose name is at the top of the bill, this tool uses anonymized IP addresses to track usage.
+Since some tools require server code, and I'm the idiot hosting the container / heating his server wardrobe, this tool uses anonymized IP addresses to track usage.
 
 Each IP subnet (IPv4: /28, IPv6: /104) has 1,000 "tokens" per day that can be used.<br>Individual API endpoints consume different amounts of tokens.
 

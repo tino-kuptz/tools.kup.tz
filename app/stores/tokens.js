@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-import { raw_get } from '@/lib/api';
+import { raw_get } from '~/lib/api';
 
 /** 
  *  Dieser Store speichert die Token-Informationen des Benutzers.

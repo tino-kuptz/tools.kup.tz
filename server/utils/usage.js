@@ -1,5 +1,38 @@
+import { isPostgresConfigured, usePostgres } from './postgres';
+
+/**
+ * Best-effort client IP for rate limits (Cloudflare, reverse proxy, or direct socket).
+ * Internal SSR $fetch and some Docker setups send no X-Forwarded-For — must not throw.
+ */
+function getRawClientIp(event) {
+    const h = event.headers;
+    const cf = h.get('cf-connecting-ip')?.trim();
+    if (cf) {
+        return cf;
+    }
+    const xff = h.get('x-forwarded-for');
+    if (xff) {
+        const first = xff.split(',')[0]?.trim();
+        if (first) {
+            return first;
+        }
+    }
+    const xri = h.get('x-real-ip')?.trim();
+    if (xri) {
+        return xri;
+    }
+    const socketIp = event.node?.req?.socket?.remoteAddress;
+    if (socketIp) {
+        return socketIp.replace(/^::ffff:/, '');
+    }
+    return '';
+}
+
 export const getClientAnonymousIp = (event) => {
-    var ip = (event.headers.get('cf-connecting-ip') ? event.headers.get('cf-connecting-ip') : event.headers.get('x-forwarded-for').split(',')[0]) + "";
+    let ip = getRawClientIp(event);
+    if (!ip) {
+        ip = '0.0.0.0';
+    }
 
     if (ip.indexOf(':') < 0) {
         // IPv4
@@ -24,23 +57,31 @@ export const getClientAnonymousIp = (event) => {
 export const trackClientTokens = async (event, tokens, reason, param) => {
     const ip = getClientAnonymousIp(event);
 
-    //console.log({ msg: "tracking client tokens", ip, tokens, reason, param });
-    const stmt = event.context.cloudflare.env.DB
-        .prepare('INSERT INTO tokens (tracking_ip, tracking_date, token_count, reason_cat, reason_param) VALUES (?, ?, ?, ?, ?);')
-        .bind(ip, new Date().toISOString().split('T')[0], tokens, reason, param);
+    if (!isPostgresConfigured()) {
+        return;
+    }
 
-    await stmt.run();
+    const day = new Date().toISOString().split('T')[0];
+    await usePostgres().query(
+        'INSERT INTO tokens (tracking_ip, tracking_date, token_count, reason_cat, reason_param) VALUES ($1, $2::date, $3, $4, $5)',
+        [ip, day, tokens, reason, param],
+    );
 }
 
 export const hasClientConsumedToken = async (event, reason, param) => {
     const ip = getClientAnonymousIp(event);
 
-    const stmt = event.context.cloudflare.env.DB
-        .prepare('SELECT COUNT(1) AS cnt FROM tokens WHERE tracking_ip = ? AND tracking_date = ? AND reason_cat = ? AND reason_param = ?;')
-        .bind(ip, new Date().toISOString().split('T')[0], reason, param);
+    if (!isPostgresConfigured()) {
+        return false;
+    }
 
-    const results = ((await stmt.run()).results);
-    const alreadyConsumed = (results && results[0] && (results[0].cnt * 1) > 0);
+    const day = new Date().toISOString().split('T')[0];
+    const { rows } = await usePostgres().query(
+        'SELECT COUNT(1)::int AS cnt FROM tokens WHERE tracking_ip = $1 AND tracking_date = $2::date AND reason_cat = $3 AND reason_param = $4',
+        [ip, day, reason, param],
+    );
+
+    const alreadyConsumed = rows[0] && (rows[0].cnt * 1) > 0;
 
     return !!alreadyConsumed;
 }
@@ -48,29 +89,24 @@ export const hasClientConsumedToken = async (event, reason, param) => {
 export const getClientUsageLimits = async (event) => {
     const ip = getClientAnonymousIp(event);
 
-    if (!event.context.cloudflare) {
+    if (!isPostgresConfigured()) {
         return {
-            ip: ip * "_emulated",
+            ip: `${ip}_emulated`,
             used: 99,
             limit: 99,
             remaining: 0,
         };
     }
 
-    const stmt = event.context.cloudflare.env.DB
-        .prepare('SELECT SUM(token_count) AS tokens FROM tokens WHERE tracking_ip = ? AND tracking_date = ?;')
-        .bind(ip, new Date().toISOString().split('T')[0]);
-    console.log({
-        sql: stmt.sql,
-        params: stmt.params,
-    })
-    const results = ((await stmt.run()).results);
+    const day = new Date().toISOString().split('T')[0];
+    const { rows } = await usePostgres().query(
+        'SELECT COALESCE(SUM(token_count), 0)::int AS tokens FROM tokens WHERE tracking_ip = $1 AND tracking_date = $2::date',
+        [ip, day],
+    );
 
-    const used = results[0].tokens * 1;
-    const limit = 1000;
+    const used = rows[0].tokens * 1;
+    const limit = (process.env.TOKEN_LIMIT ?? 1000) * 1;
     const remaining = limit - used;
-
-    //console.log({ msg: "loaded client tokens", ip, used, limit, remaining });
 
     return {
         ip,
