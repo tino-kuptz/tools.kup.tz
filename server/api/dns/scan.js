@@ -11,7 +11,11 @@ const findRecords = async (domain) => {
     const cacheKey = `crtsh_${domain}`;
     let dataFromCrtSh = await dnsScanCacheGet(cacheKey);
     if (!dataFromCrtSh) {
-        const response = await fetch(`https://crt.sh/?CN=${domain}&output=json`);
+        const response = await fetch(`https://crt.sh/?CN=${domain}&output=json`, {
+            headers: {
+                'User-Agent': 'tino@kup.tz (https://tools.kup.tz)',
+            },
+        });
         dataFromCrtSh = await response
             .json()
             .catch(() => []);
