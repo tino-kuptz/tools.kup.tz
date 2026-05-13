@@ -793,6 +793,34 @@
           "noteAndroidHomeScreen": "(Android Home Screen)",
           "noteExperimental": "(Experimental - ICO doesn't actually support this resolution)"
         }
+      },
+      "metadata": {
+        "title": "Image Metadata Editor",
+        "description": "Views and edits EXIF/XMP/IPTC metadata of PNG and JPEG images in the browser.",
+        "heading": "Image Metadata Editor",
+        "descriptionText": "Upload a PNG or JPEG image to inspect technical metadata names and values. Editing is best effort and depends on format/type support.",
+        "descriptionPrivacy": "Processing happens fully in the browser. The file is not sent to the server.",
+        "file": "File",
+        "results": "Metadata",
+        "anonymize": "Anonymize data",
+        "applyExifChanges": "Apply EXIF changes",
+        "download": "Download edited image",
+        "emptySection": "No data found",
+        "removedInfo": "Removed blocks: {blocks}",
+        "readSuccess": "Metadata read successfully",
+        "editSuccess": "EXIF changes applied",
+        "anonymizeSuccess": "Metadata has been anonymized",
+        "table": {
+          "tag": "Tag",
+          "value": "Value",
+          "edit": "Edit"
+        },
+        "errors": {
+          "invalidImage": "Invalid file. Only PNG and JPEG are allowed (including header check).",
+          "readFailed": "Could not read file",
+          "editFailed": "Could not update EXIF",
+          "anonymizeFailed": "Could not anonymize metadata"
+        }
       }
     },
     "track": {

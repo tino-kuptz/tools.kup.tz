@@ -799,6 +799,34 @@
           "noteAndroidHomeScreen": "(Android Home Screen)",
           "noteExperimental": "(Experimentell - ICO unterstützt diese Auflösung eigentlich nicht)"
         }
+      },
+      "metadata": {
+        "title": "Bild-Metadaten Editor",
+        "description": "Zeigt und bearbeitet EXIF/XMP/IPTC Metadaten von PNG- und JPEG-Bildern im Browser.",
+        "heading": "Bild-Metadaten Editor",
+        "descriptionText": "Lade ein PNG- oder JPEG-Bild hoch, um die technischen Metadaten-Namen und Werte zu sehen. Bearbeitung ist best effort und abhängig von Format/Typ.",
+        "descriptionPrivacy": "Die Verarbeitung erfolgt vollständig im Browser. Die Datei wird nicht an den Server übertragen.",
+        "file": "Datei",
+        "results": "Metadaten",
+        "anonymize": "Daten anonymisieren",
+        "applyExifChanges": "EXIF-Änderungen anwenden",
+        "download": "Bearbeitetes Bild herunterladen",
+        "emptySection": "Keine Daten gefunden",
+        "removedInfo": "Entfernte Blöcke: {blocks}",
+        "readSuccess": "Metadaten erfolgreich gelesen",
+        "editSuccess": "EXIF-Änderungen angewendet",
+        "anonymizeSuccess": "Metadaten wurden anonymisiert",
+        "table": {
+          "tag": "Tag",
+          "value": "Wert",
+          "edit": "Bearbeiten"
+        },
+        "errors": {
+          "invalidImage": "Ungültige Datei. Erlaubt sind nur PNG und JPEG (inkl. Header-Prüfung).",
+          "readFailed": "Datei konnte nicht gelesen werden",
+          "editFailed": "EXIF konnte nicht aktualisiert werden",
+          "anonymizeFailed": "Metadaten konnten nicht anonymisiert werden"
+        }
       }
     },
     "track": {

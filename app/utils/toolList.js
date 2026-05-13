@@ -183,6 +183,14 @@ const tools = [
         tokens: 0,
     },
     {
+        name: { de: "Bild-Metadaten Editor", en: "Image Metadata Editor" },
+        description: { de: "Zeigt und bearbeitet Metadaten (EXIF/XMP/IPTC) von PNG- und JPEG-Bildern im Browser.", en: "Views and edits metadata (EXIF/XMP/IPTC) of PNG and JPEG images in the browser." },
+        link: "/image/metadata",
+        category: [{ de: "Bilder", en: "Images" }],
+        tags: ["Bilder", "EXIF", "XMP", "IPTC", "Metadata"],
+        tokens: 0,
+    },
+    {
         name: { de: "Kennwort Generator", en: "Password Generator" },
         description: { de: "Erstellt sichere Kennwörter basierend auf benutzerdefinierten Vorlagen.", en: "Creates secure passwords based on custom templates." },
         link: "/security/password-generator",
